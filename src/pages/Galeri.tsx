@@ -1,17 +1,32 @@
-import { memo, useState, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Images, Calendar } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import Modal from '../components/Modal';
 import { dataService } from '../services/dataService';
 import { formatDate } from '../lib/format';
+import type { GaleriItem } from '../types';
 
 function Galeri() {
-  const allGaleri = useMemo(() => dataService.getGaleriList(), []);
-  const kategoriList = useMemo(() => dataService.getGaleriKategori(), []);
-
+  const [allGaleri, setAllGaleri] = useState<GaleriItem[]>([]);
+  const [kategoriList, setKategoriList] = useState<string[]>(['Semua']);
+  const [loading, setLoading] = useState(true);
   const [activeKategori, setActiveKategori] = useState('Semua');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      const [galeri, kategori] = await Promise.all([
+        dataService.getGaleriList(),
+        dataService.getGaleriKategori(),
+      ]);
+      setAllGaleri(galeri);
+      setKategoriList(kategori);
+      setLoading(false);
+    }
+    loadData();
+  }, []);
 
   const filtered = useMemo(
     () => activeKategori === 'Semua' ? allGaleri : allGaleri.filter((g) => g.kategori === activeKategori),
@@ -19,6 +34,14 @@ function Galeri() {
   );
 
   const handleClose = useCallback(() => setLightboxIndex(null), []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat galeri...</p>
+      </div>
+    );
+  }
 
   return (
     <div>

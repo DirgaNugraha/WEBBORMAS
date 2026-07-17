@@ -1,13 +1,39 @@
-import { memo, useMemo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, MapPin, Phone, Mail, Clock, Users, Map, Target, Eye, CheckCircle2 } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Users, Map, Target, Eye, CheckCircle2 } from 'lucide-react';
+import logoKpKp from '../aset/logopkp.png';
+
 import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import { dataService } from '../services/dataService';
+import type { KelurahanInfo, Pejabat } from '../types';
 
 function ProfilKelurahan() {
-  const kelurahanInfo = useMemo(() => dataService.getKelurahanInfo(), []);
-  const pejabatList = useMemo(() => dataService.getPejabatList(), []);
+  const [kelurahanInfo, setKelurahanInfo] = useState<KelurahanInfo | null>(null);
+  const [pejabatList, setPejabatList] = useState<Pejabat[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      const [info, pejabat] = await Promise.all([
+        dataService.getKelurahanInfo(),
+        dataService.getPejabatList(),
+      ]);
+      setKelurahanInfo(info);
+      setPejabatList(pejabat);
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  if (loading || !kelurahanInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat profil kelurahan...</p>
+      </div>
+    );
+  }
 
   const infoItems = [
     { icon: MapPin, label: 'Alamat', value: kelurahanInfo.alamat },
@@ -23,7 +49,14 @@ function ProfilKelurahan() {
       <PageHeader
         title="Profil Kelurahan"
         subtitle="Mengenal lebih dekat Kelurahan Borimasunggu, sejarah, visi, misi, dan struktur pemerintahannya."
-        icon={<Building2 className="w-8 h-8 text-white" />}
+        icon={
+          <img
+            src={logoKpKp}
+            alt="Logo Kelurahan Borimasunggu"
+            className="w-8 h-8 object-contain"
+          />
+        }
+
       />
 
       {/* Sejarah & Info */}

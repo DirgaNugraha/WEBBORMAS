@@ -1,6 +1,8 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Moon, Sun, Building2 } from 'lucide-react';
+import { Menu, X, Moon, Sun } from 'lucide-react';
+import logoKpKp from '../aset/logopkp.png';
+
 import { navItems } from '../data/navigation';
 import { useTheme } from '../hooks/useTheme';
 import { useScrollPosition } from '../hooks/useScrollPosition';
@@ -30,7 +32,12 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-3 group">
             <div className="relative">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 flex items-center justify-center shadow-lg shadow-primary-600/30 group-hover:scale-105 transition-transform">
-                <Building2 className="w-6 h-6 text-white" />
+                <img
+                  src={logoKpKp}
+                  alt="Logo Kelurahan Borimasunggu"
+                  className="w-8 h-8 object-contain"
+                />
+
               </div>
             </div>
             <div className="flex flex-col leading-tight">
@@ -46,47 +53,57 @@ export default function Navbar() {
                   scrolled ? 'text-slate-500 dark:text-slate-400' : 'text-primary-100'
                 }`}
               >
-                Kabupaten Soppeng
+                Kabupaten Pangkajene dan Kepulauan
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.path}
-                to={item.path}
-                end={item.path === '/'}
-                className={({ isActive }) =>
-                  `relative px-3.5 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive
-                      ? scrolled
-                        ? 'text-primary-700 dark:text-primary-400'
-                        : 'text-white'
-                      : scrolled
-                        ? 'text-slate-600 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400'
-                        : 'text-primary-100 hover:text-white'
-                  }`
-                }
-              >
-                {({ isActive }) => (
-                  <>
-                    {item.label}
-                    {isActive && (
-                      <motion.span
-                        layoutId="navIndicator"
-                        className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 rounded-full ${
-                          scrolled ? 'bg-primary-600 dark:bg-primary-400' : 'bg-white'
-                        }`}
-                        style={{ width: '60%' }}
-                      />
-                    )}
-                  </>
-                )}
-              </NavLink>
-            ))}
-          </div>
+          {/* Desktop Nav */}
+<div className="hidden lg:flex items-center gap-1">
+  {navItems.map((item) => (
+    <NavLink
+      key={item.path}
+      to={item.path}
+      end={item.path === '/'}
+      className={({ isActive }) =>
+        `relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+          isActive
+            ? scrolled
+              ? 'text-primary-700 dark:text-primary-400'
+              : 'text-white'
+            : scrolled
+              ? 'text-slate-600 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400'
+              : 'text-primary-100 hover:text-white'
+        }`
+      }
+    >
+      {({ isActive }) => (
+        <span className="relative inline-block">
+          {item.label}
+
+          {isActive && (
+            <motion.span
+              layoutId="navIndicator"
+              transition={{
+                type: 'spring',
+                stiffness: 500,
+                damping: 35,
+              }}
+              className={`absolute left-0 right-0 -bottom-3 h-1 rounded-full ${
+                scrolled
+                  ? 'bg-primary-600 dark:bg-primary-400'
+                  : 'bg-white'
+              }`}
+            />
+          )}
+        </span>
+      )}
+    </NavLink>
+  ))}
+</div>
+  
+
 
           {/* Right actions */}
           <div className="flex items-center gap-2">

@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Briefcase, Clock, BadgeDollarSign, CheckCircle2 } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
@@ -8,10 +8,26 @@ import { getIcon } from '../lib/icons';
 import type { Layanan } from '../types';
 
 function LayananPublik() {
-  const layananList = useMemo(() => dataService.getLayananList(), []);
+  const [layananList, setLayananList] = useState<Layanan[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<Layanan | null>(null);
 
+  useEffect(() => {
+    dataService.getLayananList().then((data) => {
+      setLayananList(data);
+      setLoading(false);
+    });
+  }, []);
+
   const handleClose = useCallback(() => setSelected(null), []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat layanan...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -74,7 +90,7 @@ function LayananPublik() {
             </p>
             <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400 font-semibold">
               <Clock className="w-5 h-5" />
-              Senin - Jumat, 07:30 - 16:00 WITA
+              Senin - Jumat, 08:00 - 16:00 WITA
             </div>
           </motion.div>
         </div>

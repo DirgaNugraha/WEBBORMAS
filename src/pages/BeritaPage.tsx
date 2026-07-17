@@ -1,4 +1,4 @@
-import { memo, useState, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useMemo, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Newspaper, Calendar, User, Search } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
@@ -8,15 +8,23 @@ import { formatDate } from '../lib/format';
 import type { Berita } from '../types';
 
 function BeritaPage() {
-  const allBerita = useMemo(() => dataService.getBeritaList(), []);
+  const [allBerita, setAllBerita] = useState<Berita[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState<Berita | null>(null);
+  const [activeKategori, setActiveKategori] = useState('Semua');
+  const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    dataService.getBeritaList().then((data) => {
+      setAllBerita(data);
+      setLoading(false);
+    });
+  }, []);
+
   const kategoriList = useMemo(
     () => ['Semua', ...Array.from(new Set(allBerita.map((b) => b.kategori)))],
     [allBerita]
   );
-
-  const [selected, setSelected] = useState<Berita | null>(null);
-  const [activeKategori, setActiveKategori] = useState('Semua');
-  const [search, setSearch] = useState('');
 
   const handleClose = useCallback(() => setSelected(null), []);
 
@@ -27,6 +35,14 @@ function BeritaPage() {
       return matchKategori && matchSearch;
     });
   }, [allBerita, activeKategori, search]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat berita...</p>
+      </div>
+    );
+  }
 
   return (
     <div>

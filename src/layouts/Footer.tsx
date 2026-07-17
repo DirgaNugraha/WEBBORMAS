@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { Building2, MapPin, Phone, Mail, Clock, Facebook, Instagram, Youtube, Send } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock} from 'lucide-react';
 import { navItems } from '../data/navigation';
 import { kelurahanInfo } from '../data/kelurahanInfo';
+import logoKpKp from '../aset/logopkp.png';
 
 export default function Footer() {
   return (
@@ -12,28 +13,20 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 flex items-center justify-center">
-                <Building2 className="w-6 h-6 text-white" />
+                <img
+                  src={logoKpKp}
+                  alt="Logo Kelurahan Borimasunggu"
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <div>
                 <h3 className="font-bold text-white text-base">Kelurahan Borimasunggu</h3>
-                <p className="text-xs text-slate-400">Kabupaten Soppeng</p>
+                <p className="text-xs text-slate-400">Kabupaten Pangkep</p>
               </div>
             </div>
             <p className="text-sm text-slate-400 leading-relaxed">
-              Website resmi Kelurahan Borimasunggu, Kecamatan Marioriwo, Kabupaten Soppeng, Sulawesi Selatan.
+              Website resmi Kelurahan Borimasunggu, Kecamatan Labakkang, Kabupaten Pangkep, Sulawesi Selatan.
             </p>
-            <div className="flex gap-3 mt-5">
-              {[Facebook, Instagram, Youtube].map((Icon, i) => (
-                <a
-                  key={i}
-                  href="#"
-                  className="w-10 h-10 rounded-lg bg-slate-800 hover:bg-primary-600 flex items-center justify-center transition-colors"
-                  aria-label="Social media"
-                >
-                  <Icon className="w-4 h-4 text-white" />
-                </a>
-              ))}
-            </div>
           </div>
 
           {/* Quick links */}
@@ -90,30 +83,6 @@ export default function Footer() {
                 <span>{kelurahanInfo.jamLayanan}</span>
               </li>
             </ul>
-          </div>
-        </div>
-
-        {/* Newsletter */}
-        <div className="mt-12 pt-8 border-t border-slate-800">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h4 className="font-semibold text-white text-base">Berlangganan Informasi</h4>
-              <p className="text-sm text-slate-400 mt-1">Dapatkan info terbaru tentang kegiatan kelurahan.</p>
-            </div>
-            <form className="flex gap-2 w-full md:w-auto" onSubmit={(e) => e.preventDefault()}>
-              <input
-                type="email"
-                placeholder="Email Anda"
-                className="px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 flex-1 md:w-64"
-              />
-              <button
-                type="submit"
-                className="px-5 py-3 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm transition-colors flex items-center gap-2 shrink-0"
-              >
-                <Send className="w-4 h-4" />
-                <span className="hidden sm:inline">Kirim</span>
-              </button>
-            </form>
           </div>
         </div>
       </div>

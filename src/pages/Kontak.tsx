@@ -1,8 +1,10 @@
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { MapPin, Phone, Mail, Clock, Send, Building2, MessageSquare } from 'lucide-react';
+import { MapPin, Phone, Mail, Clock, Send, MessageSquare } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
+import { supabase } from '../lib/supabaseClient';
+import type { KelurahanInfo } from '../types';
 
 interface ContactForm {
   nama: string;
@@ -14,16 +16,52 @@ interface ContactForm {
 const initialForm: ContactForm = { nama: '', email: '', subjek: '', pesan: '' };
 
 function Kontak() {
-  const kelurahanInfo = dataService.getKelurahanInfo();
+  const [kelurahanInfo, setKelurahanInfo] = useState<KelurahanInfo | null>(null);
+  const [loading, setLoading] = useState(true);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [sending, setSending] = useState(false);
   const [form, setForm] = useState<ContactForm>(initialForm);
 
-  const handleSubmit = useCallback((e: React.FormEvent) => {
+  useEffect(() => {
+    dataService.getKelurahanInfo().then((data) => {
+      setKelurahanInfo(data);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
+    setSending(true);
+    setSubmitError('');
+
+    const { error } = await supabase.from('pesan_kontak').insert({
+      nama: form.nama,
+      email: form.email,
+      subjek: form.subjek,
+      pesan: form.pesan,
+    });
+
+    setSending(false);
+
+    if (error) {
+      setSubmitError('Gagal mengirim pesan. Silakan coba lagi.');
+      console.error('Gagal insert pesan_kontak:', error.message);
+      return;
+    }
+
     setSubmitted(true);
     setForm(initialForm);
     setTimeout(() => setSubmitted(false), 5000);
-  }, []);
+  }, [form]);
+
+  if (loading || !kelurahanInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat halaman kontak...</p>
+      </div>
+    );
+  }
 
   const contactItems = [
     { icon: MapPin, label: 'Alamat', value: kelurahanInfo.alamat, color: 'from-primary-500 to-primary-700' },
@@ -73,19 +111,35 @@ function Kontak() {
                 ))}
               </div>
 
-              {/* Map placeholder */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                className="mt-6 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 h-64 bg-gradient-to-br from-primary-100 to-secondary-100 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center"
-              >
-                <div className="text-center">
-                  <Building2 className="w-12 h-12 text-primary-400 mx-auto mb-2" />
-                  <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">Peta Lokasi Kelurahan</p>
-                  <p className="text-xs text-slate-400 mt-1">{kelurahanInfo.alamat}</p>
-                </div>
-              </motion.div>
+                {/* Google Maps */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: true }}
+  className="mt-6 rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-lg"
+>
+  <iframe
+    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.886239049808!2d119.51715200000001!3d-4.789558999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbe4e98b7114b75%3A0x14d9bee274fb570f!2sKantor%20Lurah%20Borimasunggu!5e0!3m2!1sid!2sid!4v1783755004799!5m2!1sid!2sid"
+    width="100%"
+    height="256"
+    style={{ border: 0 }}
+    allowFullScreen
+    loading="lazy"
+    referrerPolicy="strict-origin-when-cross-origin"
+    title="Lokasi Kantor Lurah Borimasunggu"
+    className="w-full"
+  />
+</motion.div>
+<div className="mt-3 text-right">
+  <a
+    href="https://maps.google.com/?q=Kantor+Lurah+Borimasunggu"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-sm font-medium text-primary-600 hover:text-primary-700"
+  >
+    Buka di Google Maps →
+  </a>
+</div>
             </motion.div>
 
             {/* Form */}
@@ -150,11 +204,21 @@ function Kontak() {
                     placeholder="Tulis pesan Anda di sini..."
                   />
                 </div>
-                <button type="submit" className="btn-primary w-full">
-                  Kirim Pesan
+                <button type="submit" disabled={sending} className="btn-primary w-full disabled:opacity-60">
+                  {sending ? 'Mengirim...' : 'Kirim Pesan'}
                   <Send className="w-4 h-4" />
                 </button>
               </form>
+
+              {submitError && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm font-medium"
+                >
+                  {submitError}
+                </motion.div>
+              )}
 
               {submitted && (
                 <motion.div

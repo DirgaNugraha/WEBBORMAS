@@ -1,4 +1,4 @@
-import { memo, useMemo } from 'react';
+import { memo, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
@@ -7,68 +7,151 @@ import {
 import SectionTitle from '../components/ui/SectionTitle';
 import { dataService } from '../services/dataService';
 import { getIcon, colorMap } from '../lib/icons';
-import { formatDateShort, formatNumber } from '../lib/format';
+import { formatDateShort } from '../lib/format';
+
+import type {
+  KelurahanInfo, StatItem, ProgramItem, TestimonialItem, Agenda, Berita,
+} from '../types';
+
+// Urutan tampil kartu statistik di beranda (prioritas tetap, tidak tergantung kolom `urutan` di DB)
+const statOrderPriority = ['penduduk', 'wilayah', 'tetangga', 'warga'];
+
+function getStatPriority(label: string) {
+  const lower = label.toLowerCase();
+  const idx = statOrderPriority.findIndex((keyword) => lower.includes(keyword));
+  return idx === -1 ? statOrderPriority.length : idx;
+}
 
 function Beranda() {
-  const kelurahanInfo = useMemo(() => dataService.getKelurahanInfo(), []);
-  const statsData = useMemo(() => dataService.getStatsData(), []);
-  const programList = useMemo(() => dataService.getProgramList(), []);
-  const testimonialList = useMemo(() => dataService.getTestimonialList(), []);
-  const upcomingAgenda = useMemo(() => dataService.getUpcomingAgenda().slice(0, 3), []);
-  const latestBerita = useMemo(() => dataService.getBeritaList().slice(0, 3), []);
+  const [kelurahanInfo, setKelurahanInfo] = useState<KelurahanInfo | null>(null);
+  const [statsData, setStatsData] = useState<StatItem[]>([]);
+  const [programList, setProgramList] = useState<ProgramItem[]>([]);
+  const [testimonialList, setTestimonialList] = useState<TestimonialItem[]>([]);
+  const [upcomingAgenda, setUpcomingAgenda] = useState<Agenda[]>([]);
+  const [latestBerita, setLatestBerita] = useState<Berita[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      const [info, stats, program, testimonial, agenda, berita] = await Promise.all([
+        dataService.getKelurahanInfo(),
+        dataService.getStatsData(),
+        dataService.getProgramList(),
+        dataService.getTestimonialList(),
+        dataService.getUpcomingAgenda(),
+        dataService.getBeritaList(),
+      ]);
+      setKelurahanInfo(info);
+      setStatsData(stats);
+      setProgramList(program);
+      setTestimonialList(testimonial);
+      setUpcomingAgenda(agenda.slice(0, 3));
+      setLatestBerita(berita.slice(0, 3));
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  // Gabungkan data statistik: nilai "Jumlah Penduduk" & "Luas Wilayah"
+  // diambil dari profil_kelurahan (satu sumber kebenaran, diedit via ProfilAdmin),
+  // sementara kartu lain (RT, RW, dll) tetap dari tabel statistik_beranda.
+  // Urutan tampil dipaksa: Penduduk -> Wilayah -> RT -> RW.
+  const mergedStats = useMemo(() => {
+    if (!kelurahanInfo) return statsData;
+
+    const merged = statsData.map((stat) => {
+      const label = stat.label.toLowerCase();
+
+      if (label.includes('penduduk')) {
+        return {
+          ...stat,
+          value: kelurahanInfo.jumlahPenduduk.toLocaleString('id-ID'),
+        };
+      }
+
+      if (label.includes('wilayah')) {
+        return {
+          ...stat,
+          value: kelurahanInfo.luasWilayah,
+        };
+      }
+
+      return stat;
+    });
+
+    return [...merged].sort((a, b) => getStatPriority(a.label) - getStatPriority(b.label));
+  }, [statsData, kelurahanInfo]);
+
+  if (loading || !kelurahanInfo) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat data...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <img
-            src="https://images.pexels.com/photos/2692657/pexels-photo-2692657.jpeg?auto=compress&cs=tinysrgb&w=1600"
-            alt="Borimasunggu"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-secondary-800/85" />
-          <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-20" />
-        </div>
+          {/* Hero */}
+<section className="relative min-h-screen flex items-center overflow-hidden">
+  <div className="absolute inset-0">
+    <img
+      src="https://images.pexels.com/photos/2692657/pexels-photo-2692657.jpeg?auto=compress&cs=tinysrgb&w=1600"
+      alt="Borimasunggu"
+      className="w-full h-full object-cover"
+    />
 
-        <div className="container-page relative z-10 pt-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl"
-          >
-            <span className="badge bg-white/15 backdrop-blur-sm border border-white/20 text-white mb-5">
-              Selamat Datang
-            </span>
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight mb-6 text-balance">
-              Kelurahan <span className="text-secondary-300">Borimasunggu</span>
-            </h1>
-            <p className="text-lg md:text-xl text-primary-100 mb-8 max-w-2xl leading-relaxed">
-              {kelurahanInfo.visi}
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link to="/profil" className="btn-primary">
-                Pelajari Lebih Lanjut
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link
-                to="/layanan"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold hover:bg-white/20 active:scale-95 transition-all duration-200"
-              >
-                Layanan Publik
-              </Link>
-            </div>
-          </motion.div>
-        </div>
+    <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-secondary-800/85" />
+    <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-20" />
+  </div>
 
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 dark:from-slate-950 to-transparent" />
-      </section>
+  <div className="relative z-10 flex items-center min-h-screen w-full">
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="w-full max-w-3xl pl-6 pr-6 md:pl-12 md:pr-12 lg:pl-24 lg:pr-0 text-left"
+    >
+      <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-6">
+        Selamat Datang
+      </span>
+
+      <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[0.95] tracking-tight mb-8">
+        Kelurahan
+        <br />
+        <span className="text-secondary-300">
+          Borimasunggu
+        </span>
+      </h1>
+
+      <p className="text-lg md:text-xl text-primary-100 max-w-2xl leading-relaxed mb-10">
+        {kelurahanInfo.visi}
+      </p>
+
+      <div className="flex flex-wrap items-center gap-5">
+        <Link to="/profil" className="btn-primary">
+          Pelajari Lebih Lanjut
+          <ArrowRight className="w-4 h-4" />
+        </Link>
+
+        <Link
+          to="/layanan"
+          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold hover:bg-white/20 active:scale-95 transition-all duration-200"
+        >
+          Layanan Publik
+        </Link>
+      </div>
+    </motion.div>
+  </div>
+
+  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 dark:from-slate-950 to-transparent" />
+</section>
 
       {/* Stats */}
       <section className="container-page -mt-16 relative z-20">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {statsData.map((stat, i) => {
+          {mergedStats.map((stat, i) => {
             const Icon = getIcon(stat.icon);
             return (
               <motion.div
@@ -132,24 +215,24 @@ function Beranda() {
               transition={{ duration: 0.5 }}
               className="relative"
             >
-              <div className="rounded-2xl overflow-hidden shadow-2xl">
-                <img
-                  src="https://images.pexels.com/photos/53610/large-sandbox-2207085.jpg?auto=compress&cs=tinysrgb&w=800"
-                  alt="Kantor Kelurahan"
-                  className="w-full h-[400px] object-cover"
-                />
-              </div>
-              <div className="absolute -bottom-6 -left-6 hidden md:block">
-                <div className="bg-primary-600 text-white p-6 rounded-2xl shadow-xl max-w-[200px]">
-                  <div className="text-3xl font-bold">{formatNumber(kelurahanInfo.jumlahPenduduk)}</div>
-                  <div className="text-sm text-primary-100 mt-1">Jumlah Penduduk</div>
-                </div>
-              </div>
+                  <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.886239049808!2d119.51715200000001!3d-4.789558999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbe4e98b7114b75%3A0x14d9bee274fb570f!2sKantor%20Lurah%20Borimasunggu!5e0!3m2!1sid!2sid!4v1783755004799!5m2!1sid!2sid"
+        width="100%"
+        height="400"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+        title="Lokasi Kantor Lurah Borimasunggu"
+        className="w-full"
+      />
+    </div>
             </motion.div>
           </div>
         </div>
       </section>
-
+      
       {/* Programs */}
       <section className="bg-slate-100 dark:bg-slate-900/50 section-padding">
         <div className="container-page">
@@ -287,11 +370,19 @@ function Beranda() {
         <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-20" />
         <div className="absolute top-0 right-0 w-96 h-96 bg-secondary-400/20 rounded-full blur-3xl" />
         <div className="container-page relative">
-          <SectionTitle
-            badge="Testimoni"
-            title="Apa Kata Masyarakat"
-            subtitle="Pendapat dan pengalaman warga serta mitra Kelurahan Borimasunggu."
-          />
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <span className="badge bg-white/15 border border-white/20 text-white mb-3">
+              Testimoni
+            </span>
+
+            <h2 className="text-3xl md:text-4xl font-bold text-white mt-2 mb-3">
+              Apa Kata Masyarakat
+            </h2>
+
+            <p className="text-white/80">
+              Pendapat dan pengalaman warga serta mitra Kelurahan Borimasunggu.
+            </p>
+          </div>
           <div className="grid md:grid-cols-3 gap-6">
             {testimonialList.map((t, i) => (
               <motion.div

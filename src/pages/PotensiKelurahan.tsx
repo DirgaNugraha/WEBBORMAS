@@ -1,21 +1,37 @@
-import { memo, useMemo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sprout, Wheat, Beef, Scissors, Fish, CookingPot, Mountain } from 'lucide-react';
+import { Sprout } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
-import { getIcon } from '../lib/icons';
-
-const infographicData = [
-  { label: 'Lahan Pertanian', value: '450 ha', icon: Wheat, color: 'from-primary-500 to-primary-700' },
-  { label: 'Ternak Sapi', value: '1.200 ekor', icon: Beef, color: 'from-secondary-500 to-secondary-700' },
-  { label: 'Kolam Perikanan', value: '30 ha', icon: Fish, color: 'from-accent-500 to-accent-700' },
-  { label: 'Perajin Tenun', value: '80 orang', icon: Scissors, color: 'from-primary-500 to-secondary-600' },
-  { label: 'Pelaku UMKM', value: '60 unit', icon: CookingPot, color: 'from-secondary-500 to-primary-600' },
-  { label: 'Destinasi Wisata', value: '5 titik', icon: Mountain, color: 'from-accent-500 to-secondary-600' },
-];
+import { getIcon, colorMap } from '../lib/icons';
+import type { Potensi, StatItem } from '../types';
 
 function PotensiKelurahan() {
-  const potensiList = useMemo(() => dataService.getPotensiList(), []);
+  const [potensiList, setPotensiList] = useState<Potensi[]>([]);
+  const [infographicData, setInfographicData] = useState<StatItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      setLoading(true);
+      const [potensi, infografis] = await Promise.all([
+        dataService.getPotensiList(),
+        dataService.getPotensiInfografis(),
+      ]);
+      setPotensiList(potensi);
+      setInfographicData(infografis);
+      setLoading(false);
+    }
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-slate-500 dark:text-slate-400">Memuat data potensi...</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -70,24 +86,27 @@ function PotensiKelurahan() {
       <section className="bg-slate-100 dark:bg-slate-900/50 section-padding">
         <div className="container-page">
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {infographicData.map((item, i) => (
-              <motion.div
-                key={item.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.08 }}
-                className="card p-6 flex items-center gap-4"
-              >
-                <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center shrink-0 shadow-lg`}>
-                  <item.icon className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{item.value}</div>
-                  <div className="text-sm text-slate-500 dark:text-slate-400">{item.label}</div>
-                </div>
-              </motion.div>
-            ))}
+            {infographicData.map((item, i) => {
+              const Icon = getIcon(item.icon);
+              return (
+                <motion.div
+                  key={item.label}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="card p-6 flex items-center gap-4"
+                >
+                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colorMap[item.color] ?? colorMap.primary} flex items-center justify-center shrink-0 shadow-lg`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{item.value}</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">{item.label}</div>
+                  </div>
+                </motion.div>
+              );
+            })}
           </div>
         </div>
       </section>
