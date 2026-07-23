@@ -26,7 +26,6 @@ import ProfilAdmin from './pages/admin/Profiladmin';
 import PejabatAdmin from './pages/admin/Pejabatadmin';
 import StatistikAdmin from './pages/admin/Statistikadmin';
 import ProgramAdmin from './pages/admin/Programadmin';
-import TestimoniAdmin from './pages/admin/Testimoniadmin';
 import BeritaAdmin from './pages/admin/BeritaAdmin';
 import AgendaAdmin from './pages/admin/Agendaadmin';
 import GaleriAdmin from './pages/admin/Galeriadmin';
@@ -98,10 +97,6 @@ function App() {
             <Route
               path="/admin/program"
               element={<ProtectedRoute><AdminLayout><ProgramAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/testimoni"
-              element={<ProtectedRoute><AdminLayout><TestimoniAdmin /></AdminLayout></ProtectedRoute>}
             />
             <Route
               path="/admin/berita"

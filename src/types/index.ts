@@ -108,14 +108,6 @@ export interface ProgramItem {
   progress: number;
 }
 
-export interface TestimonialItem {
-  id: number;
-  nama: string;
-  peran: string;
-  pesan: string;
-  avatar: string;
-}
-
 export interface IconEntry {
   name: string;
   Icon: LucideIcon;

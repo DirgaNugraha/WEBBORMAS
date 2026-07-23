@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabaseClient';
 import { navItems } from '../data/navigation'; // navigasi menu tetap statis, tidak perlu database
 import type {
   NavItem, KelurahanInfo, Pejabat, Potensi, Berita, Agenda,
-  GaleriItem, Layanan, StatItem, ProgramItem, TestimonialItem,
+  GaleriItem, Layanan, StatItem, ProgramItem,
 } from '../types';
 
 // Helper internal untuk konversi data Supabase ke tipe Berita di React
@@ -341,16 +341,4 @@ export const dataService = {
     return data as StatItem[];
   },
 
-  async getTestimonialList(): Promise<TestimonialItem[]> {
-    const { data, error } = await supabase
-      .from('testimoni')
-      .select('*')
-      .order('urutan', { ascending: true });
-
-    if (error) {
-      console.error('Gagal mengambil testimoni:', error.message);
-      return [];
-    }
-    return data as TestimonialItem[];
-  },
 };
