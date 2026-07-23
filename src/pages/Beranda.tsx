@@ -94,60 +94,60 @@ function Beranda() {
 
   return (
     <div>
-          {/* Hero */}
-<section className="relative min-h-screen flex items-center overflow-hidden">
-  <div className="absolute inset-0">
-    <img
-      src= {kantorlurah}
-      alt="Borimasunggu"
-      className="w-full h-full object-cover"
-    />
+      {/* Hero */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        <div className="absolute inset-0">
+          <img
+            src={kantorlurah}
+            alt="Borimasunggu"
+            className="w-full h-full object-cover"
+          />
 
-    <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-secondary-800/85" />
-    <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-20" />
-  </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/90 via-primary-800/85 to-secondary-800/85" />
+          <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-20" />
+        </div>
 
-  <div className="relative z-10 flex items-center min-h-screen w-full">
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="w-full max-w-3xl pl-6 pr-6 md:pl-12 md:pr-12 lg:pl-24 lg:pr-0 text-left"
-    >
-      <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-6">
-        Selamat Datang
-      </span>
+        <div className="relative z-10 flex items-center min-h-screen w-full">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="w-full max-w-3xl pl-6 pr-6 md:pl-12 md:pr-12 lg:pl-24 lg:pr-0 text-left"
+          >
+            <span className="inline-flex items-center px-5 py-2 rounded-full bg-white/15 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-6">
+              Selamat Datang
+            </span>
 
-      <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[0.95] tracking-tight mb-8">
-        Kelurahan
-        <br />
-        <span className="text-secondary-300">
-          Borimasunggu
-        </span>
-      </h1>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[0.95] tracking-tight mb-8">
+              Kelurahan
+              <br />
+              <span className="text-secondary-300">
+                Borimasunggu
+              </span>
+            </h1>
 
-      <p className="text-lg md:text-xl text-primary-100 max-w-2xl leading-relaxed mb-10">
-        {kelurahanInfo.visi}
-      </p>
+            <p className="text-lg md:text-xl text-primary-100 max-w-2xl leading-relaxed mb-10">
+              {kelurahanInfo.visi}
+            </p>
 
-      <div className="flex flex-wrap items-center gap-5">
-        <Link to="/profil" className="btn-primary">
-          Pelajari Lebih Lanjut
-          <ArrowRight className="w-4 h-4" />
-        </Link>
+            <div className="flex flex-wrap items-center gap-5">
+              <Link to="/profil" className="btn-primary">
+                Pelajari Lebih Lanjut
+                <ArrowRight className="w-4 h-4" />
+              </Link>
 
-        <Link
-          to="/layanan"
-          className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold hover:bg-white/20 active:scale-95 transition-all duration-200"
-        >
-          Layanan Publik
-        </Link>
-      </div>
-    </motion.div>
-  </div>
+              <Link
+                to="/layanan"
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-white/10 backdrop-blur-sm border border-white/20 text-white font-semibold hover:bg-white/20 active:scale-95 transition-all duration-200"
+              >
+                Layanan Publik
+              </Link>
+            </div>
+          </motion.div>
+        </div>
 
-  <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 dark:from-slate-950 to-transparent" />
-</section>
+        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-slate-50 dark:from-slate-950 to-transparent" />
+      </section>
 
       {/* Stats */}
       <section className="container-page -mt-16 relative z-20">
@@ -216,19 +216,19 @@ function Beranda() {
               transition={{ duration: 0.5 }}
               className="relative"
             >
-                  <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
-      <iframe
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.886239049808!2d119.51715200000001!3d-4.789558999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbe4e98b7114b75%3A0x14d9bee274fb570f!2sKantor%20Lurah%20Borimasunggu!5e0!3m2!1sid!2sid!4v1783755004799!5m2!1sid!2sid"
-        width="100%"
-        height="400"
-        style={{ border: 0 }}
-        allowFullScreen
-        loading="lazy"
-        referrerPolicy="strict-origin-when-cross-origin"
-        title="Lokasi Kantor Lurah Borimasunggu"
-        className="w-full"
-      />
-    </div>
+              <div className="rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3975.886239049808!2d119.51715200000001!3d-4.789558999999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2dbe4e98b7114b75%3A0x14d9bee274fb570f!2sKantor%20Lurah%20Borimasunggu!5e0!3m2!1sid!2sid!4v1783755004799!5m2!1sid!2sid"
+                  width="100%"
+                  height="400"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  title="Lokasi Kantor Lurah Borimasunggu"
+                  className="w-full"
+                />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -334,32 +334,47 @@ function Beranda() {
                   Lihat <ChevronRight className="w-4 h-4" />
                 </Link>
               </div>
+              
               <div className="space-y-4">
-                {upcomingAgenda.map((agenda, i) => (
-                  <motion.div
-                    key={agenda.id}
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className="card card-hover p-5 flex gap-4"
-                  >
-                    <div className="shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-secondary-500 to-secondary-700 flex flex-col items-center justify-center text-white">
-                      <span className="text-lg font-bold leading-none">{new Date(agenda.tanggal).getDate()}</span>
-                      <span className="text-[10px] uppercase mt-0.5">
-                        {new Date(agenda.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
-                      </span>
+                {upcomingAgenda.length === 0 ? (
+                  <div className="card p-8 text-center border-dashed border-2 border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center">
+                    <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
+                      <CalendarDays className="w-6 h-6" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300 mb-1.5 text-[10px]">
-                        {agenda.kategori}
-                      </span>
-                      <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">{agenda.judul}</h3>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{agenda.lokasi}</p>
-                      <p className="text-xs text-slate-400 mt-1">{agenda.waktu}</p>
-                    </div>
-                  </motion.div>
-                ))}
+                    <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                      Belum ada agenda mendatang
+                    </p>
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                      Jadwal kegiatan kelurahan akan ditampilkan di sini.
+                    </p>
+                  </div>
+                ) : (
+                  upcomingAgenda.map((agenda, i) => (
+                    <motion.div
+                      key={agenda.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.1 }}
+                      className="card card-hover p-5 flex gap-4"
+                    >
+                      <div className="shrink-0 w-14 h-14 rounded-xl bg-gradient-to-br from-secondary-500 to-secondary-700 flex flex-col items-center justify-center text-white">
+                        <span className="text-lg font-bold leading-none">{new Date(agenda.tanggal).getDate()}</span>
+                        <span className="text-[10px] uppercase mt-0.5">
+                          {new Date(agenda.tanggal).toLocaleDateString('id-ID', { month: 'short' })}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300 mb-1.5 text-[10px]">
+                          {agenda.kategori}
+                        </span>
+                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm mb-1 line-clamp-1">{agenda.judul}</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">{agenda.lokasi}</p>
+                        <p className="text-xs text-slate-400 mt-1">{agenda.waktu}</p>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
               </div>
             </div>
           </div>

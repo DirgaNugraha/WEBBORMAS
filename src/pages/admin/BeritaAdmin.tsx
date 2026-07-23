@@ -24,11 +24,14 @@ function BeritaAdmin() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  
+  // Ubah tipe ID menjadi string | null karena tipe database adalah UUID
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
-  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -58,9 +61,10 @@ function BeritaAdmin() {
       gambar: item.gambar ?? '',
       tanggal: item.tanggal ? item.tanggal.slice(0, 16) : new Date().toISOString().slice(0, 16),
       penulis: item.penulis ?? 'Admin Kelurahan',
-      isEksternal: item.isEksternal ?? false,
-      namaSumber: item.namaSumber ?? '',
-      linkAsli: item.linkAsli ?? '',
+      // Membaca nilai baik dari format snake_case DB maupun camelCase
+      isEksternal: item.is_eksternal ?? item.isEksternal ?? false,
+      namaSumber: item.nama_sumber ?? item.namaSumber ?? '',
+      linkAsli: item.link_asli ?? item.linkAsli ?? '',
     });
     setFormError('');
     setModalOpen(true);
@@ -80,7 +84,19 @@ function BeritaAdmin() {
     setSaving(true);
     setFormError('');
 
-    const payload = { ...form, tanggal: new Date(form.tanggal).toISOString() };
+    // Mapping payload dari frontend (camelCase) ke nama kolom database Supabase (snake_case)
+    const payload = {
+      judul: form.judul,
+      kategori: form.kategori,
+      excerpt: form.excerpt,
+      konten: form.konten,
+      gambar: form.gambar,
+      tanggal: new Date(form.tanggal).toISOString(),
+      penulis: form.penulis,
+      is_eksternal: form.isEksternal,
+      nama_sumber: form.namaSumber,
+      link_asli: form.linkAsli,
+    };
 
     const { error } = editingId
       ? await adminService.update('berita', editingId, payload)
@@ -89,6 +105,7 @@ function BeritaAdmin() {
     setSaving(false);
 
     if (error) {
+      console.error('Error simpan berita:', error);
       setFormError('Gagal menyimpan data. Coba lagi.');
       return;
     }
@@ -146,43 +163,48 @@ function BeritaAdmin() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                {filtered.map((item) => (
-                  <tr key={item.id}>
-                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate">{item.judul}</span>
-                        {item.isEksternal && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 shrink-0">
-                            <Globe className="w-3 h-3" />
-                            {item.namaSumber || 'Eksternal'}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
-                        {item.kategori}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{formatDate(item.tanggal)}</td>
-                    <td className="px-4 py-3">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => openEdit(item)}
-                          className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/50 dark:hover:text-primary-400 transition-colors"
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteId(item.id)}
-                          className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((item) => {
+                  const isEksternal = item.is_eksternal ?? item.isEksternal;
+                  const namaSumber = item.nama_sumber ?? item.namaSumber;
+
+                  return (
+                    <tr key={item.id}>
+                      <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate">{item.judul}</span>
+                          {isEksternal && (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 shrink-0">
+                              <Globe className="w-3 h-3" />
+                              {namaSumber || 'Eksternal'}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
+                          {item.kategori}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{formatDate(item.tanggal)}</td>
+                      <td className="px-4 py-3">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => openEdit(item)}
+                            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/50 dark:hover:text-primary-400 transition-colors"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteId(item.id)}
+                            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-colors"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

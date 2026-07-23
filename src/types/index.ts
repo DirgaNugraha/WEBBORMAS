@@ -44,7 +44,7 @@ export interface Potensi {
 }
 
 export interface Berita {
-  id: number;
+  id: string; // <-- Ubah dari number ke string (karena UUID)
   judul: string;
   kategori: string;
   tanggal: string;
@@ -52,7 +52,13 @@ export interface Berita {
   konten: string;
   gambar?: string;
   penulis?: string;
-  // Properti tambahan untuk Berita Eksternal
+  
+  // Kolom DB Supabase (snake_case)
+  is_eksternal?: boolean;
+  nama_sumber?: string;
+  link_asli?: string;
+
+  // Properti opsional frontend (camelCase)
   isEksternal?: boolean;
   namaSumber?: string;
   linkAsli?: string;
