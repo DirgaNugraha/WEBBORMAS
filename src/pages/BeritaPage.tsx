@@ -1,16 +1,16 @@
-import { memo, useState, useEffect, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Newspaper, Calendar, User, Search } from 'lucide-react';
+import { Newspaper, Calendar, User, Search, Globe } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
-import Modal from '../components/Modal';
 import { dataService } from '../services/dataService';
 import { formatDate } from '../lib/format';
+import { createBeritaSlug } from '../lib/slug';
 import type { Berita } from '../types';
 
 function BeritaPage() {
   const [allBerita, setAllBerita] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<Berita | null>(null);
   const [activeKategori, setActiveKategori] = useState('Semua');
   const [search, setSearch] = useState('');
 
@@ -25,8 +25,6 @@ function BeritaPage() {
     () => ['Semua', ...Array.from(new Set(allBerita.map((b) => b.kategori)))],
     [allBerita]
   );
-
-  const handleClose = useCallback(() => setSelected(null), []);
 
   const filtered = useMemo(() => {
     return allBerita.filter((b) => {
@@ -83,48 +81,77 @@ function BeritaPage() {
             </div>
           </div>
 
-          {/* Grid */}
+          {/* Grid Berita */}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filtered.map((berita, i) => (
-              <motion.article
+              <motion.div
                 key={berita.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
-                onClick={() => setSelected(berita)}
-                className="card card-hover overflow-hidden cursor-pointer group"
               >
-                <div className="relative overflow-hidden h-52">
-                  <img
-                    src={berita.gambar}
-                    alt={berita.judul}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute top-3 left-3">
-                    <span className="badge bg-primary-600 text-white">{berita.kategori}</span>
+                <Link
+                  to={`/berita/${createBeritaSlug(berita.judul, berita.tanggal)}`}
+                  className="card card-hover overflow-hidden cursor-pointer group block"
+                >
+                  {/* Container Gambar & Badge */}
+                  <div className="relative overflow-hidden h-52 bg-slate-100 dark:bg-slate-800">
+                    {berita.gambar ? (
+                      <img
+                        src={berita.gambar}
+                        alt={berita.judul}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+                        Tidak ada gambar
+                      </div>
+                    )}
+
+                    {/* Badge Kategori (Kiri Atas) */}
+                    <div className="absolute top-3 left-3">
+                      <span className="badge bg-primary-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-sm">
+                        {berita.kategori}
+                      </span>
+                    </div>
+
+                    {/* Badge Berita Eksternal (Kanan Atas) */}
+                    {berita.isEksternal && (
+                      <div className="absolute top-3 right-3">
+                        <span className="inline-flex items-center gap-1 bg-amber-500 text-white font-semibold text-xs px-2.5 py-1 rounded-full shadow-md">
+                          <Globe className="w-3 h-3" />
+                          {berita.namaSumber || 'Eksternal'}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                    {berita.judul}
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">{berita.excerpt}</p>
-                  <div className="flex items-center gap-3 text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
-                      {formatDate(berita.tanggal)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <User className="w-3.5 h-3.5" />
-                      {berita.penulis}
-                    </span>
+
+                  {/* Body Kartu */}
+                  <div className="p-5">
+                    <h3 className="font-bold text-slate-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                      {berita.judul}
+                    </h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">
+                      {berita.excerpt}
+                    </p>
+                    <div className="flex items-center gap-3 text-xs text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <Calendar className="w-3.5 h-3.5" />
+                        {formatDate(berita.tanggal)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <User className="w-3.5 h-3.5" />
+                        {berita.penulis || 'Admin'}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </motion.article>
+                </Link>
+              </motion.div>
             ))}
           </div>
 
+          {/* Empty State */}
           {filtered.length === 0 && (
             <div className="text-center py-20">
               <p className="text-slate-500 dark:text-slate-400">Tidak ada berita yang ditemukan.</p>
@@ -132,34 +159,6 @@ function BeritaPage() {
           )}
         </div>
       </section>
-
-      {/* Modal */}
-      <Modal isOpen={selected !== null} onClose={handleClose} maxWidth="max-w-2xl">
-        {selected && (
-          <div>
-            <div className="relative">
-              <img src={selected.gambar} alt={selected.judul} className="w-full h-64 object-cover" />
-              <div className="absolute bottom-3 left-4">
-                <span className="badge bg-primary-600 text-white">{selected.kategori}</span>
-              </div>
-            </div>
-            <div className="p-6 md:p-8">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{selected.judul}</h2>
-              <div className="flex items-center gap-4 text-sm text-slate-400 mb-5">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(selected.tanggal)}
-                </span>
-                <span className="flex items-center gap-1">
-                  <User className="w-4 h-4" />
-                  {selected.penulis}
-                </span>
-              </div>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{selected.konten}</p>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 }

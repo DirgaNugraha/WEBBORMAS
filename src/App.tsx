@@ -14,6 +14,7 @@ import Agenda from './pages/Agenda';
 import Galeri from './pages/Galeri';
 import LayananPublik from './pages/LayananPublik';
 import Kontak from './pages/Kontak';
+import BeritaDetail from './pages/Beritadetail.tsx'
 import NotFound from './pages/NotFound';
 
 // Admin
@@ -34,6 +35,7 @@ import PotensiInfografisAdmin from './pages/admin/Potensiinfografis';
 import LayananAdmin from './pages/admin/Layananadmin';
 import PesanKontakAdmin from './pages/admin/PesanKontakAdmin';
 
+
 // Scroll ke atas setiap kali pindah halaman
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -51,6 +53,8 @@ function PublicLayout() {
           <Route path="/" element={<Beranda />} />
           <Route path="/profil" element={<ProfilKelurahan />} />
           <Route path="/potensi" element={<PotensiKelurahan />} />
+          <Route path="/berita" element={<BeritaPage />} />
+          <Route path="/berita/:slug" element={<BeritaDetail />} />
           <Route path="/berita" element={<BeritaPage />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/galeri" element={<Galeri />} />

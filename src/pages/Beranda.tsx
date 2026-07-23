@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import kantorlurah from '../aset/kantor kelurahan.webp';
 import {
   ArrowRight, Newspaper, CalendarDays, ChevronRight, Quote,
 } from 'lucide-react';
@@ -97,7 +98,7 @@ function Beranda() {
 <section className="relative min-h-screen flex items-center overflow-hidden">
   <div className="absolute inset-0">
     <img
-      src="https://images.pexels.com/photos/2692657/pexels-photo-2692657.jpeg?auto=compress&cs=tinysrgb&w=1600"
+      src= {kantorlurah}
       alt="Borimasunggu"
       className="w-full h-full object-cover"
     />

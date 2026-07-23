@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Globe } from 'lucide-react';
 import Modal from '../../components/Modal';
 import ImageUpload from '../../components/admin/Imageupload';
 import { adminService } from '../../services/Adminservice';
@@ -14,6 +14,9 @@ const emptyForm = {
   gambar: '',
   tanggal: new Date().toISOString().slice(0, 16),
   penulis: 'Admin Kelurahan',
+  isEksternal: false,
+  namaSumber: '',
+  linkAsli: '',
 };
 
 function BeritaAdmin() {
@@ -53,8 +56,11 @@ function BeritaAdmin() {
       excerpt: item.excerpt ?? '',
       konten: item.konten,
       gambar: item.gambar ?? '',
-      tanggal: item.tanggal.slice(0, 16),
-      penulis: item.penulis,
+      tanggal: item.tanggal ? item.tanggal.slice(0, 16) : new Date().toISOString().slice(0, 16),
+      penulis: item.penulis ?? 'Admin Kelurahan',
+      isEksternal: item.isEksternal ?? false,
+      namaSumber: item.namaSumber ?? '',
+      linkAsli: item.linkAsli ?? '',
     });
     setFormError('');
     setModalOpen(true);
@@ -63,6 +69,11 @@ function BeritaAdmin() {
   const handleSave = async () => {
     if (!form.judul.trim() || !form.konten.trim()) {
       setFormError('Judul dan konten wajib diisi.');
+      return;
+    }
+
+    if (form.isEksternal && !form.linkAsli.trim()) {
+      setFormError('URL artikel asli wajib diisi untuk berita eksternal.');
       return;
     }
 
@@ -137,8 +148,16 @@ function BeritaAdmin() {
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filtered.map((item) => (
                   <tr key={item.id}>
-                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-xs truncate">
-                      {item.judul}
+                    <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate">{item.judul}</span>
+                        {item.isEksternal && (
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 shrink-0">
+                            <Globe className="w-3 h-3" />
+                            {item.namaSumber || 'Eksternal'}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3">
                       <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
@@ -170,9 +189,9 @@ function BeritaAdmin() {
         )}
       </div>
 
-      {/* Modal form tambah/edit */}
+      {/* Modal Form Tambah/Edit */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="p-6 md:p-8">
+        <div className="p-6 md:p-8 max-h-[90vh] overflow-y-auto">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">
             {editingId ? 'Edit Berita' : 'Tambah Berita'}
           </h2>
@@ -210,6 +229,52 @@ function BeritaAdmin() {
                   className="input-field"
                 />
               </div>
+            </div>
+
+            {/* Checkbox & Options Berita Eksternal */}
+            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-3">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={form.isEksternal}
+                  onChange={(e) => setForm({ ...form, isEksternal: e.target.checked })}
+                  className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600"
+                />
+                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                  <Globe className="w-4 h-4 text-amber-500" />
+                  Berita dari Sumber Eksternal / Media Luar
+                </span>
+              </label>
+
+              {form.isEksternal && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      Nama Media / Sumber
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Contoh: DetikSulsel, Tribun Maros"
+                      value={form.namaSumber}
+                      onChange={(e) => setForm({ ...form, namaSumber: e.target.value })}
+                      className="input-field text-sm"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                      Link / URL Artikel Asli
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://..."
+                      value={form.linkAsli}
+                      onChange={(e) => setForm({ ...form, linkAsli: e.target.value })}
+                      className="input-field text-sm"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div>
@@ -267,7 +332,7 @@ function BeritaAdmin() {
         </div>
       </Modal>
 
-      {/* Modal konfirmasi hapus */}
+      {/* Modal Konfirmasi Hapus */}
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 md:p-8 text-center">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Hapus berita ini?</h2>

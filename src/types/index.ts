@@ -48,10 +48,14 @@ export interface Berita {
   judul: string;
   kategori: string;
   tanggal: string;
-  excerpt: string;
+  excerpt?: string;
   konten: string;
-  gambar: string;
-  penulis: string;
+  gambar?: string;
+  penulis?: string;
+  // Properti tambahan untuk Berita Eksternal
+  isEksternal?: boolean;
+  namaSumber?: string;
+  linkAsli?: string;
 }
 
 export interface Agenda {

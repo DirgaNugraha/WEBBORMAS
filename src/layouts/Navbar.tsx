@@ -14,6 +14,13 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const location = useLocation();
 
+  // 1. Cek apakah halaman saat ini adalah detail berita
+  // Sesuaikan '/berita/' dengan prefix URL route detail berita kamu
+  const isBeritaDetail = location.pathname.startsWith('/berita/'); 
+
+  // 2. Navbar akan berpenampilan "Solid" jika di-scroll ATAU jika sedang di halaman detail berita
+  const isSolid = scrolled || isBeritaDetail;
+
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
@@ -21,7 +28,7 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
+        isSolid
           ? 'bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg shadow-lg shadow-slate-200/30 dark:shadow-black/20'
           : 'bg-transparent'
       }`}
@@ -37,20 +44,19 @@ export default function Navbar() {
                   alt="Logo Kelurahan Borimasunggu"
                   className="w-8 h-8 object-contain"
                 />
-
               </div>
             </div>
             <div className="flex flex-col leading-tight">
               <span
                 className={`font-bold text-sm md:text-base transition-colors ${
-                  scrolled ? 'text-slate-900 dark:text-white' : 'text-white'
+                  isSolid ? 'text-slate-900 dark:text-white' : 'text-white'
                 }`}
               >
                 Kelurahan Borimasunggu
               </span>
               <span
                 className={`text-xs transition-colors ${
-                  scrolled ? 'text-slate-500 dark:text-slate-400' : 'text-primary-100'
+                  isSolid ? 'text-slate-500 dark:text-slate-400' : 'text-primary-100'
                 }`}
               >
                 Kabupaten Pangkajene dan Kepulauan
@@ -59,58 +65,55 @@ export default function Navbar() {
           </Link>
 
           {/* Desktop Nav */}
-          {/* Desktop Nav */}
-<div className="hidden lg:flex items-center gap-1">
-  {navItems.map((item) => (
-    <NavLink
-      key={item.path}
-      to={item.path}
-      end={item.path === '/'}
-      className={({ isActive }) =>
-        `relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-          isActive
-            ? scrolled
-              ? 'text-primary-700 dark:text-primary-400'
-              : 'text-white'
-            : scrolled
-              ? 'text-slate-600 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400'
-              : 'text-primary-100 hover:text-white'
-        }`
-      }
-    >
-      {({ isActive }) => (
-        <span className="relative inline-block">
-          {item.label}
+          <div className="hidden lg:flex items-center gap-1">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                end={item.path === '/'}
+                className={({ isActive }) =>
+                  `relative px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive
+                      ? isSolid
+                        ? 'text-primary-700 dark:text-primary-400'
+                        : 'text-white'
+                      : isSolid
+                        ? 'text-slate-600 dark:text-slate-300 hover:text-primary-700 dark:hover:text-primary-400'
+                        : 'text-primary-100 hover:text-white'
+                  }`
+                }
+              >
+                {({ isActive }) => (
+                  <span className="relative inline-block">
+                    {item.label}
 
-          {isActive && (
-            <motion.span
-              layoutId="navIndicator"
-              transition={{
-                type: 'spring',
-                stiffness: 500,
-                damping: 35,
-              }}
-              className={`absolute left-0 right-0 -bottom-3 h-1 rounded-full ${
-                scrolled
-                  ? 'bg-primary-600 dark:bg-primary-400'
-                  : 'bg-white'
-              }`}
-            />
-          )}
-        </span>
-      )}
-    </NavLink>
-  ))}
-</div>
-  
-
+                    {isActive && (
+                      <motion.span
+                        layoutId="navIndicator"
+                        transition={{
+                          type: 'spring',
+                          stiffness: 500,
+                          damping: 35,
+                        }}
+                        className={`absolute left-0 right-0 -bottom-3 h-1 rounded-full ${
+                          isSolid
+                            ? 'bg-primary-600 dark:bg-primary-400'
+                            : 'bg-white'
+                        }`}
+                      />
+                    )}
+                  </span>
+                )}
+              </NavLink>
+            ))}
+          </div>
 
           {/* Right actions */}
           <div className="flex items-center gap-2">
             <button
               onClick={toggleTheme}
               className={`p-2.5 rounded-xl transition-colors ${
-                scrolled
+                isSolid
                   ? 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   : 'text-white hover:bg-white/10'
               }`}
@@ -123,7 +126,7 @@ export default function Navbar() {
             <button
               onClick={() => setIsOpen(!isOpen)}
               className={`lg:hidden p-2.5 rounded-xl transition-colors ${
-                scrolled
+                isSolid
                   ? 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                   : 'text-white hover:bg-white/10'
               }`}
