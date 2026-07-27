@@ -3,23 +3,18 @@ import { motion } from 'framer-motion';
 import { Sprout } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
-import { getIcon, colorMap } from '../lib/icons';
-import type { Potensi, StatItem } from '../types';
+import { getIcon } from '../lib/icons';
+import type { Potensi } from '../types';
 
 function PotensiKelurahan() {
   const [potensiList, setPotensiList] = useState<Potensi[]>([]);
-  const [infographicData, setInfographicData] = useState<StatItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const [potensi, infografis] = await Promise.all([
-        dataService.getPotensiList(),
-        dataService.getPotensiInfografis(),
-      ]);
+      const potensi = await dataService.getPotensiList();
       setPotensiList(potensi);
-      setInfographicData(infografis);
       setLoading(false);
     }
     loadData();
@@ -81,37 +76,7 @@ function PotensiKelurahan() {
           </div>
         </div>
       </section>
-
-      {/* Infographic */}
-      <section className="bg-slate-100 dark:bg-slate-900/50 section-padding">
-        <div className="container-page">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {infographicData.map((item, i) => {
-              const Icon = getIcon(item.icon);
-              return (
-                <motion.div
-                  key={item.label}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="card p-6 flex items-center gap-4"
-                >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${colorMap[item.color] ?? colorMap.primary} flex items-center justify-center shrink-0 shadow-lg`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{item.value}</div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">{item.label}</div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
-
 export default memo(PotensiKelurahan);
