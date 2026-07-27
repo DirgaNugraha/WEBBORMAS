@@ -30,7 +30,6 @@ import BeritaAdmin from './pages/admin/BeritaAdmin';
 import AgendaAdmin from './pages/admin/Agendaadmin';
 import GaleriAdmin from './pages/admin/Galeriadmin';
 import PotensiAdmin from './pages/admin/Potensiadmin';
-import PotensiInfografisAdmin from './pages/admin/Potensiinfografis';
 import LayananAdmin from './pages/admin/Layananadmin';
 import PesanKontakAdmin from './pages/admin/PesanKontakAdmin';
 
@@ -113,10 +112,6 @@ function App() {
             <Route
               path="/admin/potensi"
               element={<ProtectedRoute><AdminLayout><PotensiAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/potensi-infografis"
-              element={<ProtectedRoute><AdminLayout><PotensiInfografisAdmin /></AdminLayout></ProtectedRoute>}
             />
             <Route
               path="/admin/layanan"
