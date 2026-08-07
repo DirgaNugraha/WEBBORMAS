@@ -41,7 +41,7 @@ function ImageUpload({ label, value, onChange, folder }: ImageUploadProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+      <label className="block text-sm font-medium text-slate-700  mb-1.5">
         {label}
       </label>
 
@@ -61,7 +61,7 @@ function ImageUpload({ label, value, onChange, folder }: ImageUploadProps) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="w-full h-40 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-primary-400 hover:text-primary-500 transition-colors"
+          className="w-full h-40 rounded-xl border-2 border-dashed border-slate-300  flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-primary-400 hover:text-primary-500 transition-colors"
         >
           {uploading ? (
             <>
@@ -85,7 +85,7 @@ function ImageUpload({ label, value, onChange, folder }: ImageUploadProps) {
         className="hidden"
       />
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400 mt-1.5">{error}</p>}
+      {error && <p className="text-sm text-red-600  mt-1.5">{error}</p>}
     </div>
   );
 }

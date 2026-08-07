@@ -1,6 +1,6 @@
 import { memo, useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Briefcase, Clock, BadgeDollarSign, CheckCircle2 } from 'lucide-react';
+import { Briefcase, Clock, BadgeCheck, CheckCircle2, ChevronRight, ShieldCheck } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import Modal from '../components/Modal';
 import { dataService } from '../services/dataService';
@@ -23,120 +23,182 @@ function LayananPublik() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Memuat layanan...</p>
+      <div className="min-h-screen bg-slate-50  flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-blue-700 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm font-medium text-slate-600 ">
+          Memuat Daftar Layanan Publik...
+        </p>
       </div>
     );
   }
 
   return (
-    <div>
+    <div className="bg-slate-50  min-h-screen antialiased text-slate-800  pb-20">
+      {/* Page Header Modern */}
       <PageHeader
         title="Layanan Publik"
-        subtitle="Pelayanan administrasi dan publik yang tersedia di Kantor Kelurahan Borimasunggu."
-        icon={<Briefcase className="w-8 h-8 text-white" />}
+        subtitle="Daftar pelayanan administrasi resmi kependudukan dan umum yang tersedia di Kantor Kelurahan Borimasunggu."
+        icon={<Briefcase className="w-8 h-8 text-blue-700 " />}
       />
 
-      <section className="section-padding">
-        <div className="container-page">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {layananList.map((layanan, i) => {
-              const Icon = getIcon(layanan.icon);
-              return (
-                <motion.div
-                  key={layanan.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  onClick={() => setSelected(layanan)}
-                  className="card card-hover p-6 cursor-pointer group"
-                >
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center mb-4 shadow-lg group-hover:scale-105 transition-transform">
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="font-bold text-slate-900 dark:text-white mb-2">{layanan.nama}</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">{layanan.deskripsi}</p>
-                  <div className="flex items-center gap-2 text-xs">
-                    <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
-                      <Clock className="w-3 h-3" />
-                      {layanan.durasi}
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
+      {/* Grid Layanan Main Section */}
+      <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-2">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700  bg-blue-50  px-3 py-1 rounded-md border border-blue-100 ">
+              Katalog Administrasi
+            </span>
+            <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900  mt-2">
+              Jenis Layanan Terpadu
+            </h2>
           </div>
+          <p className="text-sm text-slate-500 ">
+            Klik pada kartu layanan untuk melihat persyaratan dokumen.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {layananList.map((layanan, i) => {
+            const Icon = getIcon(layanan.icon);
+            return (
+              <motion.div
+                key={layanan.id}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                onClick={() => setSelected(layanan)}
+                className="group bg-white  rounded-2xl border border-slate-200/90  p-5 shadow-xs hover:shadow-xl hover:border-blue-300  hover:-translate-y-1 transition-all duration-300 cursor-pointer flex flex-col justify-between"
+              >
+                <div>
+                  {/* Container Icon */}
+                  <div className="w-12 h-12 rounded-xl bg-blue-50  border border-blue-100  flex items-center justify-center mb-4 text-blue-700  group-hover:bg-blue-700 group-hover:text-white group-hover:border-blue-700 transition-colors">
+                    <Icon className="w-6 h-6 transition-transform group-hover:scale-110" />
+                  </div>
+
+                  <h3 className="font-bold text-slate-900  text-base md:text-lg mb-2 group-hover:text-blue-700  transition-colors leading-snug">
+                    {layanan.nama}
+                  </h3>
+
+                  <p className="text-xs md:text-sm text-slate-600  line-clamp-2 leading-relaxed mb-4">
+                    {layanan.deskripsi}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t border-slate-100  flex items-center justify-between text-xs font-semibold text-slate-500 ">
+                  <span className="flex items-center gap-1.5 bg-slate-100  px-2.5 py-1 rounded-md text-slate-700 ">
+                    <Clock className="w-3.5 h-3.5 text-blue-700 " />
+                    {layanan.durasi}
+                  </span>
+                  
+                  <span className="inline-flex items-center gap-1 text-blue-700  font-bold group-hover:translate-x-1 transition-transform">
+                    Detail <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 
-      {/* Info banner */}
-      <section className="bg-slate-100 dark:bg-slate-900/50 section-padding">
-        <div className="container-page">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="card p-8 md:p-10 max-w-3xl mx-auto text-center"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center mx-auto mb-5 shadow-lg">
-              <BadgeDollarSign className="w-8 h-8 text-white" />
+      {/* Info Banner: Bebas Biaya */}
+      <section className="py-8 container mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="bg-white  rounded-3xl border border-slate-200  p-6 md:p-10 shadow-xs relative overflow-hidden"
+        >
+          <div className="max-w-3xl mx-auto text-center relative z-10 flex flex-col items-center">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50  border border-blue-100  flex items-center justify-center mb-4 text-blue-700 ">
+              <BadgeCheck className="w-7 h-7" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Pelayanan Gratis</h3>
-            <p className="text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
-              Seluruh layanan administrasi di Kelurahan Borimasunggu tidak dipungut biaya (gratis).
-              Masyarakat cukup membawa persyaratan yang dibutuhkan dan mengunjungi kantor kelurahan
-              pada jam pelayanan.
+
+            <h3 className="text-xl md:text-2xl font-black text-slate-900  mb-2">
+              Seluruh Pelayanan 100% Gratis
+            </h3>
+
+            <p className="text-sm md:text-base text-slate-600  leading-relaxed max-w-2xl mb-6">
+              Sesuai ketentuan, seluruh pengurusan administrasi di Kelurahan Borimasunggu 
+              <span className="font-bold text-slate-900 "> tidak dipungut biaya apapun (Rp0)</span>. 
+              Masyarakat cukup membawa dokumen persyaratan yang valid ke kantor kelurahan.
             </p>
-            <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-400 font-semibold">
-              <Clock className="w-5 h-5" />
-              Senin - Jumat, 08:00 - 16:00 WITA
+
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100  text-slate-700  text-xs md:text-sm font-bold border border-slate-200/80 ">
+              <Clock className="w-4 h-4 text-blue-700 " />
+              <span>Jam Layanan: Senin - Jumat (08:00 - 16:00 WITA)</span>
             </div>
-          </motion.div>
-        </div>
+          </div>
+        </motion.div>
       </section>
 
-      {/* Modal */}
+      {/* Modal Detail Layanan */}
       <Modal isOpen={selected !== null} onClose={handleClose}>
         {selected && (
-          <div className="p-6 md:p-8">
-            <div className="flex items-start gap-4 mb-5">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center shadow-lg shrink-0">
+          <div className="p-6 md:p-8 bg-white  rounded-2xl">
+            {/* Modal Header */}
+            <div className="flex items-start gap-4 mb-6 pb-6 border-b border-slate-100 ">
+              <div className="w-12 h-12 rounded-xl bg-blue-700 text-white flex items-center justify-center shrink-0 shadow-xs">
                 {(() => {
                   const Icon = getIcon(selected.icon);
-                  return <Icon className="w-7 h-7 text-white" />;
+                  return <Icon className="w-6 h-6" />;
                 })()}
               </div>
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{selected.nama}</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">{selected.deskripsi}</p>
+              <div className="pr-6">
+                <h2 className="text-xl font-bold text-slate-900  leading-snug">
+                  {selected.nama}
+                </h2>
+                <p className="text-xs md:text-sm text-slate-500  mt-1">
+                  {selected.deskripsi}
+                </p>
               </div>
             </div>
 
+            {/* Info Badges */}
             <div className="grid grid-cols-2 gap-3 mb-6">
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mb-1">
-                  <Clock className="w-3.5 h-3.5" /> Durasi
-                </div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">{selected.durasi}</div>
+              <div className="p-3.5 rounded-xl bg-slate-50  border border-slate-100 ">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400  flex items-center gap-1.5 mb-1">
+                  <Clock className="w-3.5 h-3.5 text-blue-700 " /> Est. Waktu Selesai
+                </span>
+                <span className="text-sm font-bold text-slate-900 ">
+                  {selected.durasi}
+                </span>
               </div>
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
-                <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mb-1">
-                  <BadgeDollarSign className="w-3.5 h-3.5" /> Biaya
-                </div>
-                <div className="text-sm font-semibold text-secondary-600 dark:text-secondary-400">{selected.biaya}</div>
+
+              <div className="p-3.5 rounded-xl bg-slate-50  border border-slate-100 ">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400  flex items-center gap-1.5 mb-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 " /> Biaya Retribusi
+                </span>
+                <span className="text-sm font-bold text-emerald-600 ">
+                  {selected.biaya}
+                </span>
               </div>
             </div>
 
-            <h3 className="font-semibold text-slate-900 dark:text-white mb-3">Persyaratan:</h3>
-            <ul className="space-y-2">
-              {selected.syarat.map((s, i) => (
-                <li key={i} className="flex gap-3 items-start">
-                  <CheckCircle2 className="w-5 h-5 text-secondary-600 dark:text-secondary-400 shrink-0 mt-0.5" />
-                  <span className="text-sm text-slate-600 dark:text-slate-400">{s}</span>
-                </li>
-              ))}
-            </ul>
+            {/* Persyaratan List */}
+            <div>
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900  mb-3">
+                Dokumen Persyaratan:
+              </h3>
+              <ul className="space-y-2.5 bg-slate-50  p-4 rounded-xl border border-slate-100 ">
+                {selected.syarat.map((s, i) => (
+                  <li key={i} className="flex gap-3 items-start text-xs md:text-sm text-slate-700 ">
+                    <CheckCircle2 className="w-4 h-4 text-blue-700  shrink-0 mt-0.5" />
+                    <span className="leading-relaxed">{s}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Action Footer Button */}
+            <div className="mt-6 pt-4 border-t border-slate-100  flex justify-end">
+              <button
+                onClick={handleClose}
+                className="px-5 py-2.5 rounded-xl bg-slate-900  hover:bg-slate-800  text-white font-bold text-xs tracking-wider transition-all shadow-xs"
+              >
+                Tutup Informasi
+              </button>
+            </div>
           </div>
         )}
       </Modal>

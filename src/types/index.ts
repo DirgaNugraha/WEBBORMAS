@@ -45,6 +45,7 @@ export interface Potensi {
 
 export interface Berita {
   id: string; // <-- Ubah dari number ke string (karena UUID)
+  slug?: string;
   judul: string;
   kategori: string;
   tanggal: string;

@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
-import { ThemeProvider } from './context/ThemeContext'; // ⚠️ sesuaikan path ini dengan lokasi file ThemeProvider kamu
 
 // Layout & halaman publik
 import Navbar from './layouts/Navbar';
@@ -44,7 +43,7 @@ function ScrollToTop() {
 // Layout untuk halaman publik (dengan Navbar + Footer)
 function PublicLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-white dark:bg-slate-950">
+    <div className="min-h-screen flex flex-col bg-white ">
       <Navbar />
       <main className="flex-1">
         <Routes>
@@ -68,7 +67,6 @@ function PublicLayout() {
 
 function App() {
   return (
-    <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
           <ScrollToTop />
@@ -125,9 +123,8 @@ function App() {
             {/* Semua route selain /admin/* masuk ke layout publik */}
             <Route path="/*" element={<PublicLayout />} />
           </Routes>
-        </BrowserRouter>
+</BrowserRouter>
       </AuthProvider>
-    </ThemeProvider>
   );
 }
 

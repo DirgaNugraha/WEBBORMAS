@@ -65,17 +65,17 @@ function GaleriAdmin() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Galeri</h1>
-          <p className="text-slate-500 dark:text-slate-400">Kelola foto kegiatan dan fasilitas kelurahan</p>
+          <h1 className="text-2xl font-bold text-slate-900 ">Galeri</h1>
+          <p className="text-slate-500 ">Kelola foto kegiatan dan fasilitas kelurahan</p>
         </div>
         <button onClick={openCreate} className="btn-primary shrink-0"><Plus className="w-4 h-4" /> Tambah Foto</button>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading ? (
-          <p className="text-slate-500 dark:text-slate-400 col-span-full text-center py-6">Memuat data...</p>
+          <p className="text-slate-500  col-span-full text-center py-6">Memuat data...</p>
         ) : list.length === 0 ? (
-          <p className="text-slate-500 dark:text-slate-400 col-span-full text-center py-6">Belum ada foto.</p>
+          <p className="text-slate-500  col-span-full text-center py-6">Belum ada foto.</p>
         ) : (
           list.map((item) => (
             <div key={item.id} className="card overflow-hidden group">
@@ -83,11 +83,11 @@ function GaleriAdmin() {
                 <img src={item.gambar} alt={item.judul} className="w-full h-full object-cover" />
               </div>
               <div className="p-3">
-                <p className="font-medium text-sm text-slate-900 dark:text-white truncate">{item.judul}</p>
-                <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300 mt-1">{item.kategori}</span>
+                <p className="font-medium text-sm text-slate-900  truncate">{item.judul}</p>
+                <span className="badge bg-secondary-100 text-secondary-700   mt-1">{item.kategori}</span>
                 <div className="flex gap-2 mt-2">
-                  <button onClick={() => openEdit(item)} className="text-xs font-medium text-primary-600 dark:text-primary-400 flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
-                  <button onClick={() => setDeleteId(item.id)} className="text-xs font-medium text-red-600 dark:text-red-400 flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
+                  <button onClick={() => openEdit(item)} className="text-xs font-medium text-primary-600  flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
+                  <button onClick={() => setDeleteId(item.id)} className="text-xs font-medium text-red-600  flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
                 </div>
               </div>
             </div>
@@ -97,22 +97,22 @@ function GaleriAdmin() {
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-6 md:p-8">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">{editingId ? 'Edit Foto' : 'Tambah Foto'}</h2>
+          <h2 className="text-xl font-bold text-slate-900  mb-5">{editingId ? 'Edit Foto' : 'Tambah Foto'}</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Judul</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Judul</label>
               <input type="text" value={form.judul} onChange={(e) => setForm({ ...form, judul: e.target.value })} className="input-field" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Kategori</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Kategori</label>
               <input type="text" value={form.kategori} onChange={(e) => setForm({ ...form, kategori: e.target.value })} placeholder="contoh: Kegiatan, Fasilitas, Wisata" className="input-field" />
             </div>
             <ImageUpload label="Gambar" value={form.gambar} onChange={(url) => setForm({ ...form, gambar: url })} folder="galeri" />
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tanggal</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Tanggal</label>
               <input type="date" value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} className="input-field" />
             </div>
-            {formError && <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-sm">{formError}</div>}
+            {formError && <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">{formError}</div>}
             <div className="flex gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="btn-outline flex-1">Batal</button>
               <button onClick={handleSave} disabled={saving} className="btn-primary flex-1 disabled:opacity-60">{saving ? 'Menyimpan...' : 'Simpan'}</button>
@@ -123,8 +123,8 @@ function GaleriAdmin() {
 
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 md:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Hapus foto ini?</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">Tindakan ini tidak bisa dibatalkan.</p>
+          <h2 className="text-lg font-bold text-slate-900  mb-2">Hapus foto ini?</h2>
+          <p className="text-slate-500  mb-6">Tindakan ini tidak bisa dibatalkan.</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Batal</button>
             <button onClick={handleDelete} className="btn-primary flex-1 !bg-red-600 hover:!bg-red-700">Hapus</button>

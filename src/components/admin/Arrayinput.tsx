@@ -22,7 +22,7 @@ function ArrayInput({ label, values, onChange, placeholder }: ArrayInputProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+      <label className="block text-sm font-medium text-slate-700  mb-1.5">
         {label}
       </label>
       <div className="space-y-2">
@@ -38,7 +38,7 @@ function ArrayInput({ label, values, onChange, placeholder }: ArrayInputProps) {
             <button
               type="button"
               onClick={() => handleRemove(index)}
-              className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0 hover:bg-red-100 dark:hover:bg-red-950/50 transition-colors"
+              className="w-10 h-10 rounded-xl bg-red-50  text-red-600  flex items-center justify-center shrink-0 hover:bg-red-100  transition-colors"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -48,7 +48,7 @@ function ArrayInput({ label, values, onChange, placeholder }: ArrayInputProps) {
       <button
         type="button"
         onClick={handleAdd}
-        className="mt-2 flex items-center gap-1.5 text-sm font-medium text-primary-600 dark:text-primary-400"
+        className="mt-2 flex items-center gap-1.5 text-sm font-medium text-primary-600 "
       >
         <Plus className="w-4 h-4" /> Tambah item
       </button>

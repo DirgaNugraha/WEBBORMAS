@@ -1,23 +1,44 @@
 import { supabase } from '../lib/supabaseClient';
-import { navItems } from '../data/navigation'; // navigasi menu tetap statis, tidak perlu database
+import { navItems } from '../data/navigation';
 import type {
-  NavItem, KelurahanInfo, Pejabat, Potensi, Berita, Agenda,
-  GaleriItem, Layanan, StatItem, ProgramItem,
+  NavItem,
+  KelurahanInfo,
+  Pejabat,
+  Potensi,
+  Berita,
+  Agenda,
+  GaleriItem,
+  Layanan,
+  StatItem,
+  ProgramItem,
 } from '../types';
 
 // Helper internal untuk konversi data Supabase ke tipe Berita di React
 function formatBeritaItem(item: any): Berita {
+  // Generate slug otomatis dari judul jika di DB belum ada/kosong
+  const autoSlug = item.judul
+    ? item.judul
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)+/g, '')
+    : item.id;
+
   return {
     ...item,
+    slug: item.slug || autoSlug, // Prioritaskan slug dari DB, fallback ke autoSlug
     isEksternal: item.is_eksternal ?? false,
     namaSumber: item.nama_sumber ?? null,
     linkAsli: item.link_asli ?? null,
   };
 }
 
+// Regex checker untuk mendeteksi apakah string berformat UUID
+const isUUID = (str: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
 export const dataService = {
   // ============================================================
-  // NAVIGASI — tetap statis (menu tidak perlu diambil dari DB)
+  // NAVIGASI
   // ============================================================
   getNavItems(): NavItem[] {
     return navItems;
@@ -38,7 +59,6 @@ export const dataService = {
       return null;
     }
 
-    // Mapping snake_case (database) -> camelCase (dipakai di komponen)
     return {
       kecamatan: data.kecamatan,
       kabupaten: data.kabupaten,
@@ -118,94 +138,27 @@ export const dataService = {
     return formatBeritaItem(data);
   },
 
-  // --- Fungsi Admin CMS Berita ---
-  async tambahBerita(payload: {
-    judul: string;
-    kategori: string;
-    excerpt?: string;
-    konten: string;
-    gambar?: string;
-    penulis?: string;
-    isEksternal?: boolean;
-    namaSumber?: string;
-    linkAsli?: string;
-  }): Promise<Berita | null> {
-    const { data, error } = await supabase
+  // 🟢 PENCARIAN FLEKSIBEL (SUPPORT SLUG DAN UUID)
+  async getBeritaBySlug(slug: string): Promise<Berita | undefined> {
+    // 1. Jika URL berupa UUID, query langsung via ID
+    if (isUUID(slug)) {
+      return this.getBeritaById(slug);
+    }
+
+    // 2. Coba query ke database berdasarkan kolom 'slug'
+    const { data: dataBySlug } = await supabase
       .from('berita')
-      .insert([
-        {
-          judul: payload.judul,
-          kategori: payload.kategori || 'Umum',
-          excerpt: payload.excerpt || null,
-          konten: payload.konten,
-          gambar: payload.gambar || null,
-          penulis: payload.penulis || 'Admin Kelurahan',
-          is_eksternal: payload.isEksternal ?? false,
-          nama_sumber: payload.isEksternal ? payload.namaSumber : null,
-          link_asli: payload.isEksternal ? payload.linkAsli : null,
-        },
-      ])
-      .select()
-      .single();
+      .select('*')
+      .eq('slug', slug)
+      .maybeSingle();
 
-    if (error) {
-      console.error('Gagal menambah berita:', error.message);
-      throw error;
+    if (dataBySlug) {
+      return formatBeritaItem(dataBySlug);
     }
 
-    return formatBeritaItem(data);
-  },
-
-  async updateBerita(
-    id: string,
-    payload: Partial<{
-      judul: string;
-      kategori: string;
-      excerpt: string;
-      konten: string;
-      gambar: string;
-      penulis: string;
-      isEksternal: boolean;
-      namaSumber: string;
-      linkAsli: string;
-    }>
-  ): Promise<Berita | null> {
-    const updateData: Record<string, any> = {};
-
-    if (payload.judul !== undefined) updateData.judul = payload.judul;
-    if (payload.kategori !== undefined) updateData.kategori = payload.kategori;
-    if (payload.excerpt !== undefined) updateData.excerpt = payload.excerpt;
-    if (payload.konten !== undefined) updateData.konten = payload.konten;
-    if (payload.gambar !== undefined) updateData.gambar = payload.gambar;
-    if (payload.penulis !== undefined) updateData.penulis = payload.penulis;
-    if (payload.isEksternal !== undefined) updateData.is_eksternal = payload.isEksternal;
-    if (payload.namaSumber !== undefined) updateData.nama_sumber = payload.namaSumber;
-    if (payload.linkAsli !== undefined) updateData.link_asli = payload.linkAsli;
-
-    const { data, error } = await supabase
-      .from('berita')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Gagal mengupdate berita:', error.message);
-      throw error;
-    }
-
-    return formatBeritaItem(data);
-  },
-
-  async deleteBerita(id: string): Promise<boolean> {
-    const { error } = await supabase.from('berita').delete().eq('id', id);
-
-    if (error) {
-      console.error('Gagal menghapus berita:', error.message);
-      return false;
-    }
-
-    return true;
+    // 3. Fallback: Ambil semua data lalu cari berita yang slug hasil konversi judulnya cocok
+    const allBerita = await this.getBeritaList();
+    return allBerita.find((item) => item.slug === slug);
   },
 
   // ============================================================
@@ -255,9 +208,7 @@ export const dataService = {
   },
 
   async getGaleriKategori(): Promise<string[]> {
-    const { data, error } = await supabase
-      .from('galeri')
-      .select('kategori');
+    const { data, error } = await supabase.from('galeri').select('kategori');
 
     if (error) {
       console.error('Gagal mengambil kategori galeri:', error.message);
@@ -340,5 +291,4 @@ export const dataService = {
     }
     return data as StatItem[];
   },
-
 };

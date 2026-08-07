@@ -37,7 +37,7 @@ export default function Modal({
             onClick={(e) => e.stopPropagation()}
             className={`
               relative
-              bg-white dark:bg-slate-900
+              bg-white 
               rounded-2xl
               shadow-2xl
               w-full

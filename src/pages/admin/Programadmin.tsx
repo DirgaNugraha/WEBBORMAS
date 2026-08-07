@@ -72,17 +72,17 @@ function ProgramAdmin() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Program Unggulan</h1>
-          <p className="text-slate-500 dark:text-slate-400">Kelola program kerja kelurahan beserta progresnya</p>
+          <h1 className="text-2xl font-bold text-slate-900 ">Program Unggulan</h1>
+          <p className="text-slate-500 ">Kelola program kerja kelurahan beserta progresnya</p>
         </div>
         <button onClick={openCreate} className="btn-primary shrink-0"><Plus className="w-4 h-4" /> Tambah Program</button>
       </div>
 
       <div className="space-y-3">
         {loading ? (
-          <p className="text-slate-500 dark:text-slate-400 text-center py-6">Memuat data...</p>
+          <p className="text-slate-500  text-center py-6">Memuat data...</p>
         ) : list.length === 0 ? (
-          <p className="text-slate-500 dark:text-slate-400 text-center py-6">Belum ada program.</p>
+          <p className="text-slate-500  text-center py-6">Belum ada program.</p>
         ) : (
           list.map((item) => {
             const Icon = getIcon(item.icon);
@@ -92,15 +92,15 @@ function ProgramAdmin() {
                   <Icon className="w-5.5 h-5.5 text-white" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm text-slate-900 dark:text-white">{item.judul}</p>
-                  <div className="w-full h-1.5 rounded-full bg-slate-100 dark:bg-slate-800 mt-2">
+                  <p className="font-semibold text-sm text-slate-900 ">{item.judul}</p>
+                  <div className="w-full h-1.5 rounded-full bg-slate-100  mt-2">
                     <div className="h-full rounded-full bg-primary-500" style={{ width: `${item.progress}%` }} />
                   </div>
                 </div>
-                <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 shrink-0">{item.progress}%</span>
+                <span className="text-sm font-semibold text-slate-500  shrink-0">{item.progress}%</span>
                 <div className="flex gap-2 shrink-0">
-                  <button onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/50 dark:hover:text-primary-400 transition-colors"><Pencil className="w-4 h-4" /></button>
-                  <button onClick={() => setDeleteId(item.id)} className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                  <button onClick={() => openEdit(item)} className="w-8 h-8 rounded-lg bg-slate-100  flex items-center justify-center text-slate-600  hover:bg-primary-100 hover:text-primary-700   transition-colors"><Pencil className="w-4 h-4" /></button>
+                  <button onClick={() => setDeleteId(item.id)} className="w-8 h-8 rounded-lg bg-slate-100  flex items-center justify-center text-slate-600  hover:bg-red-100 hover:text-red-700   transition-colors"><Trash2 className="w-4 h-4" /></button>
                 </div>
               </div>
             );
@@ -110,19 +110,19 @@ function ProgramAdmin() {
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-6 md:p-8">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">{editingId ? 'Edit Program' : 'Tambah Program'}</h2>
+          <h2 className="text-xl font-bold text-slate-900  mb-5">{editingId ? 'Edit Program' : 'Tambah Program'}</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Judul</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Judul</label>
               <input type="text" value={form.judul} onChange={(e) => setForm({ ...form, judul: e.target.value })} className="input-field" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Deskripsi</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Deskripsi</label>
               <textarea value={form.deskripsi} onChange={(e) => setForm({ ...form, deskripsi: e.target.value })} rows={3} className="input-field resize-none" />
             </div>
             <IconPicker label="Ikon" value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Progress (%)</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Progress (%)</label>
               <input
                 type="number"
                 min={0}
@@ -141,7 +141,7 @@ function ProgramAdmin() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Urutan Tampil</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Urutan Tampil</label>
               <input
                 type="number"
                 value={form.urutan}
@@ -157,7 +157,7 @@ function ProgramAdmin() {
                 className="input-field"
               />
             </div>
-            {formError && <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-sm">{formError}</div>}
+            {formError && <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">{formError}</div>}
             <div className="flex gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="btn-outline flex-1">Batal</button>
               <button onClick={handleSave} disabled={saving} className="btn-primary flex-1 disabled:opacity-60">{saving ? 'Menyimpan...' : 'Simpan'}</button>
@@ -168,8 +168,8 @@ function ProgramAdmin() {
 
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 md:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Hapus program ini?</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">Tindakan ini tidak bisa dibatalkan.</p>
+          <h2 className="text-lg font-bold text-slate-900  mb-2">Hapus program ini?</h2>
+          <p className="text-slate-500  mb-6">Tindakan ini tidak bisa dibatalkan.</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Batal</button>
             <button onClick={handleDelete} className="btn-primary flex-1 !bg-red-600 hover:!bg-red-700">Hapus</button>

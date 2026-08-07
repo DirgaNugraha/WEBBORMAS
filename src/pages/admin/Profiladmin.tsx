@@ -53,50 +53,50 @@ function ProfilAdmin() {
   };
 
   if (loading || !form) {
-    return <p className="p-6 text-slate-500 dark:text-slate-400">Memuat profil...</p>;
+    return <p className="p-6 text-slate-500 ">Memuat profil...</p>;
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Profil Kelurahan</h1>
-      <p className="text-slate-500 dark:text-slate-400 mb-6">Data ini hanya 1 baris, berlaku untuk seluruh website</p>
+      <h1 className="text-2xl font-bold text-slate-900  mb-1">Profil Kelurahan</h1>
+      <p className="text-slate-500  mb-6">Data ini hanya 1 baris, berlaku untuk seluruh website</p>
 
       <div className="card p-6 space-y-4 max-w-3xl">
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Kecamatan</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Kecamatan</label>
             <input type="text" value={form.kecamatan} onChange={(e) => setForm({ ...form, kecamatan: e.target.value })} className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Kabupaten</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Kabupaten</label>
             <input type="text" value={form.kabupaten} onChange={(e) => setForm({ ...form, kabupaten: e.target.value })} className="input-field" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Alamat Kantor</label>
+          <label className="block text-sm font-medium text-slate-700  mb-1.5">Alamat Kantor</label>
           <input type="text" value={form.alamat} onChange={(e) => setForm({ ...form, alamat: e.target.value })} className="input-field" />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Telepon</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Telepon</label>
             <input type="text" value={form.telepon} onChange={(e) => setForm({ ...form, telepon: e.target.value })} className="input-field" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Email</label>
             <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="input-field" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Jam Layanan</label>
+          <label className="block text-sm font-medium text-slate-700  mb-1.5">Jam Layanan</label>
           <input type="text" value={form.jam_layanan} onChange={(e) => setForm({ ...form, jam_layanan: e.target.value })} className="input-field" />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Jumlah Penduduk</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Jumlah Penduduk</label>
             <input
               type="number"
               value={form.jumlah_penduduk}
@@ -105,7 +105,7 @@ function ProfilAdmin() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Luas Wilayah</label>
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">Luas Wilayah</label>
             <input
               type="text"
               value={form.luas_wilayah}
@@ -117,7 +117,7 @@ function ProfilAdmin() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Visi</label>
+          <label className="block text-sm font-medium text-slate-700  mb-1.5">Visi</label>
           <textarea value={form.visi} onChange={(e) => setForm({ ...form, visi: e.target.value })} rows={2} className="input-field resize-none" />
         </div>
 
@@ -129,15 +129,15 @@ function ProfilAdmin() {
         />
 
         <div>
-          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Sejarah</label>
+          <label className="block text-sm font-medium text-slate-700  mb-1.5">Sejarah</label>
           <textarea value={form.sejarah} onChange={(e) => setForm({ ...form, sejarah: e.target.value })} rows={4} className="input-field resize-none" />
         </div>
 
         {error && (
-          <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-sm">{error}</div>
+          <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">{error}</div>
         )}
         {success && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-400 text-sm">
+          <div className="flex items-center gap-2 p-3 rounded-xl bg-green-50  text-green-700  text-sm">
             <CheckCircle2 className="w-4 h-4" /> Perubahan berhasil disimpan.
           </div>
         )}

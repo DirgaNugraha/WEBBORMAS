@@ -32,7 +32,7 @@ function IconPicker({ label, value, onChange }: IconPickerProps) {
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+      <label className="block text-sm font-medium text-slate-700  mb-1.5">
         {label}
       </label>
       <button
@@ -45,7 +45,7 @@ function IconPicker({ label, value, onChange }: IconPickerProps) {
       </button>
 
       {open && (
-        <div className="absolute z-20 mt-2 w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg p-3">
+        <div className="absolute z-20 mt-2 w-full bg-white  border border-slate-200  rounded-xl shadow-lg p-3">
           <input
             type="text"
             value={search}
@@ -69,8 +69,8 @@ function IconPicker({ label, value, onChange }: IconPickerProps) {
                   }}
                   className={`aspect-square rounded-lg flex items-center justify-center transition-colors ${
                     value === name
-                      ? 'bg-primary-100 dark:bg-primary-950/50 text-primary-700 dark:text-primary-400'
-                      : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400'
+                      ? 'bg-primary-100  text-primary-700 '
+                      : 'hover:bg-slate-100  text-slate-600 '
                   }`}
                 >
                   <Icon className="w-4.5 h-4.5" />

@@ -70,17 +70,17 @@ function LayananAdmin() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Layanan Publik</h1>
-          <p className="text-slate-500 dark:text-slate-400">Kelola daftar layanan administrasi kelurahan</p>
+          <h1 className="text-2xl font-bold text-slate-900 ">Layanan Publik</h1>
+          <p className="text-slate-500 ">Kelola daftar layanan administrasi kelurahan</p>
         </div>
         <button onClick={openCreate} className="btn-primary shrink-0"><Plus className="w-4 h-4" /> Tambah Layanan</button>
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {loading ? (
-          <p className="text-slate-500 dark:text-slate-400 col-span-full text-center py-6">Memuat data...</p>
+          <p className="text-slate-500  col-span-full text-center py-6">Memuat data...</p>
         ) : list.length === 0 ? (
-          <p className="text-slate-500 dark:text-slate-400 col-span-full text-center py-6">Belum ada layanan.</p>
+          <p className="text-slate-500  col-span-full text-center py-6">Belum ada layanan.</p>
         ) : (
           list.map((item) => {
             const Icon = getIcon(item.icon);
@@ -89,11 +89,11 @@ function LayananAdmin() {
                 <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center mb-3">
                   <Icon className="w-5.5 h-5.5 text-white" />
                 </div>
-                <p className="font-semibold text-sm text-slate-900 dark:text-white mb-1">{item.nama}</p>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">{item.durasi} • {item.biaya}</p>
+                <p className="font-semibold text-sm text-slate-900  mb-1">{item.nama}</p>
+                <p className="text-xs text-slate-500  mb-3">{item.durasi} • {item.biaya}</p>
                 <div className="flex gap-2">
-                  <button onClick={() => openEdit(item)} className="text-xs font-medium text-primary-600 dark:text-primary-400 flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
-                  <button onClick={() => setDeleteId(item.id)} className="text-xs font-medium text-red-600 dark:text-red-400 flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
+                  <button onClick={() => openEdit(item)} className="text-xs font-medium text-primary-600  flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
+                  <button onClick={() => setDeleteId(item.id)} className="text-xs font-medium text-red-600  flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
                 </div>
               </div>
             );
@@ -103,29 +103,29 @@ function LayananAdmin() {
 
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-6 md:p-8">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">{editingId ? 'Edit Layanan' : 'Tambah Layanan'}</h2>
+          <h2 className="text-xl font-bold text-slate-900  mb-5">{editingId ? 'Edit Layanan' : 'Tambah Layanan'}</h2>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Nama Layanan</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Nama Layanan</label>
               <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="input-field" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Deskripsi</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Deskripsi</label>
               <textarea value={form.deskripsi} onChange={(e) => setForm({ ...form, deskripsi: e.target.value })} rows={2} className="input-field resize-none" />
             </div>
             <IconPicker label="Ikon" value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Durasi</label>
+                <label className="block text-sm font-medium text-slate-700  mb-1.5">Durasi</label>
                 <input type="text" value={form.durasi} onChange={(e) => setForm({ ...form, durasi: e.target.value })} placeholder="1 hari kerja" className="input-field" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Biaya</label>
+                <label className="block text-sm font-medium text-slate-700  mb-1.5">Biaya</label>
                 <input type="text" value={form.biaya} onChange={(e) => setForm({ ...form, biaya: e.target.value })} className="input-field" />
               </div>
             </div>
             <ArrayInput label="Syarat" values={form.syarat} onChange={(syarat) => setForm({ ...form, syarat })} placeholder="contoh: Fotokopi KTP" />
-            {formError && <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-sm">{formError}</div>}
+            {formError && <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">{formError}</div>}
             <div className="flex gap-3 pt-2">
               <button onClick={() => setModalOpen(false)} className="btn-outline flex-1">Batal</button>
               <button onClick={handleSave} disabled={saving} className="btn-primary flex-1 disabled:opacity-60">{saving ? 'Menyimpan...' : 'Simpan'}</button>
@@ -136,8 +136,8 @@ function LayananAdmin() {
 
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 md:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Hapus layanan ini?</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">Tindakan ini tidak bisa dibatalkan.</p>
+          <h2 className="text-lg font-bold text-slate-900  mb-2">Hapus layanan ini?</h2>
+          <p className="text-slate-500  mb-6">Tindakan ini tidak bisa dibatalkan.</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Batal</button>
             <button onClick={handleDelete} className="btn-primary flex-1 !bg-red-600 hover:!bg-red-700">Hapus</button>

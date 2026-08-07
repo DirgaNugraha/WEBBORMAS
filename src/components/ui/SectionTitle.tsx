@@ -15,7 +15,7 @@ export default function SectionTitle({ title, subtitle, centered = true, badge }
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="badge bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300 mb-3"
+          className="badge bg-primary-100 text-primary-700   mb-3"
         >
           {badge}
         </motion.span>
@@ -25,7 +25,7 @@ export default function SectionTitle({ title, subtitle, centered = true, badge }
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
-        className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white"
+        className="text-3xl md:text-4xl font-bold text-slate-900 "
       >
         {title}
       </motion.h2>
@@ -35,7 +35,7 @@ export default function SectionTitle({ title, subtitle, centered = true, badge }
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className={`mt-4 text-lg text-slate-600 dark:text-slate-400 ${centered ? 'max-w-2xl mx-auto' : 'max-w-2xl'}`}
+          className={`mt-4 text-lg text-slate-600  ${centered ? 'max-w-2xl mx-auto' : 'max-w-2xl'}`}
         >
           {subtitle}
         </motion.p>

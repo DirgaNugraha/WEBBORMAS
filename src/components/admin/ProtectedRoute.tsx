@@ -7,8 +7,8 @@ function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-        <p className="text-slate-500 dark:text-slate-400">Memeriksa status login...</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 ">
+        <p className="text-slate-500 ">Memeriksa status login...</p>
       </div>
     );
   }

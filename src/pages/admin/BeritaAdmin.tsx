@@ -127,8 +127,8 @@ function BeritaAdmin() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Berita</h1>
-          <p className="text-slate-500 dark:text-slate-400">Kelola berita dan pengumuman kelurahan</p>
+          <h1 className="text-2xl font-bold text-slate-900 ">Berita</h1>
+          <p className="text-slate-500 ">Kelola berita dan pengumuman kelurahan</p>
         </div>
         <button onClick={openCreate} className="btn-primary shrink-0">
           <Plus className="w-4 h-4" /> Tambah Berita
@@ -148,13 +148,13 @@ function BeritaAdmin() {
 
       <div className="card overflow-hidden">
         {loading ? (
-          <p className="p-6 text-center text-slate-500 dark:text-slate-400">Memuat data...</p>
+          <p className="p-6 text-center text-slate-500 ">Memuat data...</p>
         ) : filtered.length === 0 ? (
-          <p className="p-6 text-center text-slate-500 dark:text-slate-400">Belum ada berita.</p>
+          <p className="p-6 text-center text-slate-500 ">Belum ada berita.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+              <thead className="bg-slate-50  text-slate-500 ">
                 <tr>
                   <th className="text-left font-medium px-4 py-3">Judul</th>
                   <th className="text-left font-medium px-4 py-3">Kategori</th>
@@ -162,18 +162,18 @@ function BeritaAdmin() {
                   <th className="text-right font-medium px-4 py-3">Aksi</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100 ">
                 {filtered.map((item) => {
                   const isEksternal = item.is_eksternal ?? item.isEksternal;
                   const namaSumber = item.nama_sumber ?? item.namaSumber;
 
                   return (
                     <tr key={item.id}>
-                      <td className="px-4 py-3 font-medium text-slate-900 dark:text-white max-w-xs">
+                      <td className="px-4 py-3 font-medium text-slate-900  max-w-xs">
                         <div className="flex items-center gap-2">
                           <span className="truncate">{item.judul}</span>
                           {isEksternal && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 shrink-0">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-800   shrink-0">
                               <Globe className="w-3 h-3" />
                               {namaSumber || 'Eksternal'}
                             </span>
@@ -181,22 +181,22 @@ function BeritaAdmin() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="badge bg-secondary-100 text-secondary-700 dark:bg-secondary-900/40 dark:text-secondary-300">
+                        <span className="badge bg-secondary-100 text-secondary-700  ">
                           {item.kategori}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{formatDate(item.tanggal)}</td>
+                      <td className="px-4 py-3 text-slate-500 ">{formatDate(item.tanggal)}</td>
                       <td className="px-4 py-3">
                         <div className="flex justify-end gap-2">
                           <button
                             onClick={() => openEdit(item)}
-                            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-primary-100 hover:text-primary-700 dark:hover:bg-primary-950/50 dark:hover:text-primary-400 transition-colors"
+                            className="w-8 h-8 rounded-lg bg-slate-100  flex items-center justify-center text-slate-600  hover:bg-primary-100 hover:text-primary-700   transition-colors"
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setDeleteId(item.id)}
-                            className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-colors"
+                            className="w-8 h-8 rounded-lg bg-slate-100  flex items-center justify-center text-slate-600  hover:bg-red-100 hover:text-red-700   transition-colors"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -214,13 +214,13 @@ function BeritaAdmin() {
       {/* Modal Form Tambah/Edit */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
         <div className="p-6 md:p-8 max-h-[90vh] overflow-y-auto">
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-5">
+          <h2 className="text-xl font-bold text-slate-900  mb-5">
             {editingId ? 'Edit Berita' : 'Tambah Berita'}
           </h2>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Judul</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Judul</label>
               <input
                 type="text"
                 value={form.judul}
@@ -231,7 +231,7 @@ function BeritaAdmin() {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Kategori</label>
+                <label className="block text-sm font-medium text-slate-700  mb-1.5">Kategori</label>
                 <select
                   value={form.kategori}
                   onChange={(e) => setForm({ ...form, kategori: e.target.value })}
@@ -243,7 +243,7 @@ function BeritaAdmin() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Tanggal Publish</label>
+                <label className="block text-sm font-medium text-slate-700  mb-1.5">Tanggal Publish</label>
                 <input
                   type="datetime-local"
                   value={form.tanggal}
@@ -254,24 +254,24 @@ function BeritaAdmin() {
             </div>
 
             {/* Checkbox & Options Berita Eksternal */}
-            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 space-y-3">
+            <div className="p-4 rounded-xl bg-slate-50  border border-slate-200  space-y-3">
               <label className="flex items-center gap-3 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={form.isEksternal}
                   onChange={(e) => setForm({ ...form, isEksternal: e.target.checked })}
-                  className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-slate-300 dark:border-slate-600"
+                  className="w-4 h-4 rounded text-primary-600 focus:ring-primary-500 border-slate-300 "
                 />
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                <span className="text-sm font-semibold text-slate-800  flex items-center gap-1.5">
                   <Globe className="w-4 h-4 text-amber-500" />
                   Berita dari Sumber Eksternal / Media Luar
                 </span>
               </label>
 
               {form.isEksternal && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200/60 dark:border-slate-700/60">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-200/60 ">
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-slate-600  mb-1">
                       Nama Media / Sumber
                     </label>
                     <input
@@ -284,7 +284,7 @@ function BeritaAdmin() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1">
+                    <label className="block text-xs font-medium text-slate-600  mb-1">
                       Link / URL Artikel Asli
                     </label>
                     <input
@@ -300,7 +300,7 @@ function BeritaAdmin() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Ringkasan</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Ringkasan</label>
               <textarea
                 value={form.excerpt}
                 onChange={(e) => setForm({ ...form, excerpt: e.target.value })}
@@ -310,7 +310,7 @@ function BeritaAdmin() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Konten</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Konten</label>
               <textarea
                 value={form.konten}
                 onChange={(e) => setForm({ ...form, konten: e.target.value })}
@@ -327,7 +327,7 @@ function BeritaAdmin() {
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">Penulis</label>
+              <label className="block text-sm font-medium text-slate-700  mb-1.5">Penulis</label>
               <input
                 type="text"
                 value={form.penulis}
@@ -337,7 +337,7 @@ function BeritaAdmin() {
             </div>
 
             {formError && (
-              <div className="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 text-sm">
+              <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">
                 {formError}
               </div>
             )}
@@ -357,8 +357,8 @@ function BeritaAdmin() {
       {/* Modal Konfirmasi Hapus */}
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
         <div className="p-6 md:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Hapus berita ini?</h2>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">Tindakan ini tidak bisa dibatalkan.</p>
+          <h2 className="text-lg font-bold text-slate-900  mb-2">Hapus berita ini?</h2>
+          <p className="text-slate-500  mb-6">Tindakan ini tidak bisa dibatalkan.</p>
           <div className="flex gap-3">
             <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Batal</button>
             <button onClick={handleDelete} className="btn-primary flex-1 !bg-red-600 hover:!bg-red-700">

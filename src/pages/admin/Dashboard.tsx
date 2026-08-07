@@ -54,15 +54,15 @@ function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-slate-500 dark:text-slate-400">Memuat dashboard...</p>
+        <p className="text-slate-500 ">Memuat dashboard...</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Dashboard</h1>
-      <p className="text-slate-500 dark:text-slate-400 mb-6">Ringkasan aktivitas website</p>
+      <h1 className="text-2xl font-bold text-slate-900  mb-1">Dashboard</h1>
+      <p className="text-slate-500  mb-6">Ringkasan aktivitas website</p>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
         {statCards.map((stat, i) => {
@@ -78,8 +78,8 @@ function Dashboard() {
                 <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3 shadow-md`}>
                   <Icon className="w-5.5 h-5.5 text-white" />
                 </div>
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">{stat.value}</div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">{stat.label}</div>
+                <div className="text-2xl font-bold text-slate-900 ">{stat.value}</div>
+                <div className="text-sm text-slate-500 ">{stat.label}</div>
               </Link>
             </motion.div>
           );
@@ -88,26 +88,26 @@ function Dashboard() {
 
       <div className="card p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-slate-900 dark:text-white">Pesan Kontak Terbaru</h2>
-          <Link to="/admin/pesan-kontak" className="text-sm text-primary-600 dark:text-primary-400 font-medium flex items-center gap-1">
+          <h2 className="font-bold text-slate-900 ">Pesan Kontak Terbaru</h2>
+          <Link to="/admin/pesan-kontak" className="text-sm text-primary-600  font-medium flex items-center gap-1">
             Lihat semua <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
 
         {pesanTerbaru.length === 0 ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">Belum ada pesan masuk.</p>
+          <p className="text-sm text-slate-500 ">Belum ada pesan masuk.</p>
         ) : (
           <div className="space-y-3">
             {pesanTerbaru.map((p) => (
-              <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
+              <div key={p.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 ">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold text-sm text-slate-900 dark:text-white truncate">{p.nama}</span>
+                    <span className="font-semibold text-sm text-slate-900  truncate">{p.nama}</span>
                     {p.status === 'baru' && (
-                      <span className="badge bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400 shrink-0">Baru</span>
+                      <span className="badge bg-red-100 text-red-700   shrink-0">Baru</span>
                     )}
                   </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 truncate">{p.subjek}</p>
+                  <p className="text-sm text-slate-600  truncate">{p.subjek}</p>
                 </div>
                 <span className="text-xs text-slate-400 shrink-0">{formatDate(p.created_at)}</span>
               </div>

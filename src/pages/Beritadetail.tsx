@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useMemo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Share2, Clock, ExternalLink, Globe } from 'lucide-react';
@@ -33,26 +33,34 @@ function formatRelativeTime(dateString: string): string {
 
 function BeritaDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const [allBerita, setAllBerita] = useState<Berita[]>([]);
+  const [berita, setBerita] = useState<Berita | null>(null);
+  const [beritaLainnya, setBeritaLainnya] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    dataService.getBeritaList().then((data) => {
-      setAllBerita(data);
+
+    async function loadDetailAndSidebar() {
+      if (!slug) return;
+      setLoading(true);
+
+      // 1. Ambil detail berita berdasarkan slug/UUID
+      const detail = await dataService.getBeritaBySlug(slug);
+      setBerita(detail || null);
+
+      // 2. Ambil daftar berita lain untuk sidebar
+      const all = await dataService.getBeritaList();
+      if (detail) {
+        setBeritaLainnya(all.filter((b) => b.id !== detail.id).slice(0, 3));
+      } else {
+        setBeritaLainnya(all.slice(0, 3));
+      }
+
       setLoading(false);
-    });
+    }
+
+    loadDetailAndSidebar();
   }, [slug]);
-
-  const berita = useMemo(
-    () => allBerita.find((b) => createBeritaSlug(b.judul, b.tanggal) === slug) ?? null,
-    [allBerita, slug]
-  );
-
-  const beritaLainnya = useMemo(
-    () => allBerita.filter((b) => createBeritaSlug(b.judul, b.tanggal) !== slug).slice(0, 3),
-    [allBerita, slug]
-  );
 
   const handleShare = async () => {
     const shareData = {
@@ -73,7 +81,7 @@ function BeritaDetail() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Memuat berita...</p>
+        <p className="text-slate-500 ">Memuat berita...</p>
       </div>
     );
   }
@@ -81,10 +89,10 @@ function BeritaDetail() {
   if (!berita) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center">
-        <p className="text-xl font-semibold text-slate-800 dark:text-white mb-2">
+        <p className="text-xl font-semibold text-slate-800  mb-2">
           Berita tidak ditemukan
         </p>
-        <p className="text-slate-500 dark:text-slate-400 mb-6">
+        <p className="text-slate-500  mb-6">
           Berita yang Anda cari mungkin sudah dihapus atau tautannya salah.
         </p>
         <Link to="/berita" className="btn-primary">
@@ -96,9 +104,9 @@ function BeritaDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-slate-950">
+    <div className="min-h-screen bg-slate-50/50 ">
       {/* 1. Header & Meta Info */}
-      <section className="pt-28 md:pt-32 pb-6 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800/60">
+      <section className="pt-28 md:pt-32 pb-6 bg-white  border-b border-slate-100 ">
         <div className="container-page">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -107,11 +115,11 @@ function BeritaDetail() {
           >
             {/* Badges (Kategori & Eksternal Tag) */}
             <div className="flex flex-wrap items-center gap-2 mb-4">
-              <span className="inline-block px-3.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700 dark:bg-primary-900/40 dark:text-primary-300">
+              <span className="inline-block px-3.5 py-1 rounded-full text-xs font-semibold bg-primary-100 text-primary-700  ">
                 {berita.kategori}
               </span>
               {berita.isEksternal && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800  ">
                   <Globe className="w-3.5 h-3.5" />
                   {berita.namaSumber || 'Berita Eksternal'}
                 </span>
@@ -119,15 +127,15 @@ function BeritaDetail() {
             </div>
 
             {/* Judul Berita */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight mb-6 max-w-4xl">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900  leading-tight mb-6 max-w-4xl">
               {berita.judul}
             </h1>
 
             {/* Meta Info & Bagikan */}
-            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200/80 dark:border-slate-800">
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400">
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200/80 ">
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500 ">
                 <span className="flex items-center gap-1.5 font-medium">
-                  <User className="w-4 h-4 text-primary-600 dark:text-primary-400" />
+                  <User className="w-4 h-4 text-primary-600 " />
                   {berita.penulis || 'Admin Kelurahan'}
                 </span>
                 <span className="flex items-center gap-1.5">
@@ -143,7 +151,7 @@ function BeritaDetail() {
               <button
                 type="button"
                 onClick={handleShare}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700/50 shadow-sm transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-slate-200  bg-white  text-slate-700  text-sm font-medium hover:bg-slate-50  shadow-sm transition-all"
               >
                 <Share2 className="w-4 h-4" />
                 Bagikan
@@ -157,7 +165,6 @@ function BeritaDetail() {
       <section className="py-8 md:py-10">
         <div className="container-page">
           <div className="grid lg:grid-cols-3 gap-8">
-            
             {/* Kolom Artikel Utama */}
             <motion.article
               initial={{ opacity: 0, y: 20 }}
@@ -165,9 +172,9 @@ function BeritaDetail() {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="lg:col-span-2 space-y-6"
             >
-              {/* Gambar Utama (Hanya ditampilkan jika ada gambar) */}
+              {/* Gambar Utama */}
               {berita.gambar && (
-                <div className="overflow-hidden rounded-2xl shadow-sm border border-slate-200/60 dark:border-slate-800 bg-slate-100 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-2xl shadow-sm border border-slate-200/60  bg-slate-100 ">
                   <img
                     src={berita.gambar}
                     alt={berita.judul}
@@ -177,22 +184,22 @@ function BeritaDetail() {
               )}
 
               {/* Isi Teks Berita */}
-              <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
-                <div className="prose prose-slate dark:prose-invert max-w-none">
-                  <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-base md:text-lg whitespace-pre-line">
+              <div className="bg-white  p-6 md:p-8 rounded-2xl border border-slate-200/60  shadow-sm">
+                <div className="prose prose-slate  max-w-none">
+                  <p className="text-slate-700  leading-relaxed text-base md:text-lg whitespace-pre-line">
                     {berita.konten}
                   </p>
                 </div>
 
                 {/* Box Sumber Berita Eksternal */}
                 {berita.isEksternal && (
-                  <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-                    <div className="p-4 rounded-xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="mt-8 pt-6 border-t border-slate-100 ">
+                    <div className="p-4 rounded-xl bg-amber-50/50  border border-amber-200/80  flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div>
-                        <span className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        <span className="text-xs font-bold uppercase tracking-wider text-amber-700 ">
                           Sumber Berita Eksternal
                         </span>
-                        <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mt-0.5">
+                        <h4 className="text-sm font-semibold text-slate-800  mt-0.5">
                           {berita.namaSumber || 'Media Luar'}
                         </h4>
                       </div>
@@ -216,30 +223,30 @@ function BeritaDetail() {
 
             {/* Sidebar: Berita Lainnya */}
             <aside>
-              <div className="sticky top-28 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800 shadow-sm">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-5 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="sticky top-28 bg-white  p-6 rounded-2xl border border-slate-200/60  shadow-sm">
+                <h2 className="text-lg font-bold text-slate-900  mb-5 pb-3 border-b border-slate-100 ">
                   Berita Lainnya
                 </h2>
                 <div className="space-y-4">
                   {beritaLainnya.map((b) => (
                     <Link
                       key={b.id}
-                      to={`/berita/${createBeritaSlug(b.judul, b.tanggal)}`}
-                      className="flex gap-3.5 p-2 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors group"
+                      to={`/berita/${b.slug || createBeritaSlug(b.judul, b.tanggal)}`}
+                      className="flex gap-3.5 p-2 rounded-xl hover:bg-slate-50  transition-colors group"
                     >
                       {b.gambar ? (
                         <img
                           src={b.gambar}
                           alt={b.judul}
-                          className="w-20 h-20 rounded-lg object-cover shrink-0 border border-slate-100 dark:border-slate-800"
+                          className="w-20 h-20 rounded-lg object-cover shrink-0 border border-slate-100 "
                         />
                       ) : (
-                        <div className="w-20 h-20 rounded-lg bg-slate-100 dark:bg-slate-800 shrink-0 flex items-center justify-center text-xs text-slate-400">
+                        <div className="w-20 h-20 rounded-lg bg-slate-100  shrink-0 flex items-center justify-center text-xs text-slate-400">
                           No Image
                         </div>
                       )}
                       <div className="min-w-0 flex flex-col justify-center">
-                        <h3 className="text-sm font-semibold text-slate-900 dark:text-white line-clamp-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
+                        <h3 className="text-sm font-semibold text-slate-900  line-clamp-2 group-hover:text-primary-600  transition-colors">
                           {b.judul}
                         </h3>
                         <p className="text-xs text-slate-400 mt-1">{formatDate(b.tanggal)}</p>
@@ -252,7 +259,6 @@ function BeritaDetail() {
                 </div>
               </div>
             </aside>
-
           </div>
         </div>
       </section>

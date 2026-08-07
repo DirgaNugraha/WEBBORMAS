@@ -31,7 +31,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50  px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -48,15 +48,15 @@ function Login() {
 
               </div>
             </div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Admin Kelurahan</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <h1 className="text-2xl font-bold text-slate-900 ">Admin Kelurahan</h1>
+          <p className="text-sm text-slate-500  mt-1">
             Masuk untuk mengelola konten website
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">
               Email
             </label>
             <div className="relative">
@@ -74,7 +74,7 @@ function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5">
+            <label className="block text-sm font-medium text-slate-700  mb-1.5">
               Password
             </label>
             <div className="relative">
@@ -95,7 +95,7 @@ function Login() {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 text-sm"
+              className="flex items-center gap-2 p-3 rounded-xl bg-red-50  border border-red-200  text-red-700  text-sm"
             >
               <AlertCircle className="w-4 h-4 shrink-0" />
               {error}

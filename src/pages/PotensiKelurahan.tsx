@@ -1,14 +1,102 @@
-import { memo, useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Sprout } from 'lucide-react';
+import { memo, useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Sprout, ImageOff, Layers, ArrowUpRight } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
 import { getIcon } from '../lib/icons';
 import type { Potensi } from '../types';
 
+// Component Skeleton Loading Kartu
+function PotensiSkeletonCard() {
+  return (
+    <div className="bg-white  border border-slate-200/90  rounded-2xl overflow-hidden shadow-xs animate-pulse flex flex-col">
+      <div className="h-52 sm:h-56 w-full bg-slate-200 " />
+      <div className="p-5 md:p-6 space-y-3">
+        <div className="h-5 bg-slate-200  rounded w-3/4" />
+        <div className="space-y-2 pt-1">
+          <div className="h-3.5 bg-slate-200  rounded w-full" />
+          <div className="h-3.5 bg-slate-200  rounded w-5/6" />
+          <div className="h-3.5 bg-slate-200  rounded w-2/3" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Sub-komponen Kartu Potensi
+function PotensiCard({ potensi, index }: { potensi: Potensi; index: number }) {
+  const [imgError, setImgError] = useState(false);
+  const Icon = getIcon(potensi.icon);
+
+  const hasValidPhoto = potensi.gambar && potensi.gambar.trim() !== '' && !imgError;
+
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      transition={{ duration: 0.25, delay: index * 0.04 }}
+      className="group bg-white  border border-slate-200/90  rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300  hover:-translate-y-1 transition-all duration-300 flex flex-col"
+    >
+      {/* Visual Image Container */}
+      <div className="relative h-52 sm:h-56 w-full bg-slate-100  overflow-hidden flex items-center justify-center">
+        {hasValidPhoto ? (
+          <img
+            src={potensi.gambar}
+            alt={potensi.nama}
+            onError={() => setImgError(true)}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+        ) : (
+          /* Placeholder Gambar Kosong/Gagal */
+          <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200/80   flex flex-col items-center justify-center p-4 text-slate-400 ">
+            <ImageOff className="w-9 h-9 mb-2 opacity-60" />
+            <span className="text-xs font-semibold tracking-wide">Gambar Belum Tersedia</span>
+          </div>
+        )}
+
+        {/* Gradien Overlay Legibilitas Teks */}
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
+
+        {/* Floating Icon Badge (Kiri Atas) */}
+        <div className="absolute top-3.5 left-3.5 z-10">
+          <div className="p-2.5 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/20 text-white shadow-xs">
+            <Icon className="w-4 h-4 md:w-5 md:h-5" />
+          </div>
+        </div>
+
+        {/* Badge Kategori (Kanan Bawah Overlay) */}
+        <div className="absolute bottom-3 right-3 z-10">
+          <span className="px-3 py-1 rounded-md bg-blue-700/90 backdrop-blur-md border border-blue-400/30 text-white text-[11px] font-extrabold uppercase tracking-wider shadow-xs">
+            {potensi.kategori}
+          </span>
+        </div>
+      </div>
+
+      {/* Deskripsi Konten */}
+      <div className="p-5 md:p-6 flex-1 flex flex-col justify-between">
+        <div>
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="font-extrabold text-slate-900  text-base md:text-lg group-hover:text-blue-700  transition-colors line-clamp-1 leading-snug">
+              {potensi.nama}
+            </h3>
+            <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-blue-700  group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
+          </div>
+
+          <p className="text-xs md:text-sm text-slate-600  leading-relaxed mt-2.5 line-clamp-3">
+            {potensi.deskripsi}
+          </p>
+        </div>
+      </div>
+    </motion.article>
+  );
+}
+
 function PotensiKelurahan() {
   const [potensiList, setPotensiList] = useState<Potensi[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
 
   useEffect(() => {
     async function loadData() {
@@ -20,63 +108,94 @@ function PotensiKelurahan() {
     loadData();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-slate-500 dark:text-slate-400">Memuat data potensi...</p>
-      </div>
-    );
-  }
+  // Ambil daftar kategori unik secara dinamis
+  const categories = useMemo(() => {
+    const unique = Array.from(new Set(potensiList.map((p) => p.kategori)));
+    return ['Semua', ...unique];
+  }, [potensiList]);
+
+  // Filter daftar potensi berdasarkan kategori
+  const filteredPotensi = useMemo(() => {
+    if (selectedCategory === 'Semua') return potensiList;
+    return potensiList.filter((p) => p.kategori === selectedCategory);
+  }, [potensiList, selectedCategory]);
 
   return (
-    <div>
+    <div className="bg-slate-50  min-h-screen antialiased text-slate-800  pb-20">
+      {/* Header Halaman */}
       <PageHeader
         title="Potensi Kelurahan"
-        subtitle="Beragam potensi alam, pertanian, peternakan, kerajinan, dan ekonomi yang dimiliki Kelurahan Borimasunggu."
-        icon={<Sprout className="w-8 h-8 text-white" />}
+        subtitle="Komoditas keunggulan daerah, sektor kelautan, pertanian, dan usaha lokal Kelurahan Borimasunggu."
+        icon={<Sprout className="w-8 h-8 text-blue-700 " />}
       />
 
-      <section className="section-padding">
-        <div className="container-page">
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {potensiList.map((potensi, i) => {
-              const Icon = getIcon(potensi.icon);
-              return (
-                <motion.article
-                  key={potensi.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="card card-hover overflow-hidden group"
-                >
-                  <div className="relative overflow-hidden h-56">
-                    <img
-                      src={potensi.gambar}
-                      alt={potensi.nama}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-                    <div className="absolute top-4 left-4">
-                      <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center">
-                        <Icon className="w-5 h-5 text-white" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-3 left-4 right-4">
-                      <span className="badge bg-secondary-500/90 text-white">{potensi.kategori}</span>
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-2">{potensi.nama}</h3>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{potensi.deskripsi}</p>
-                  </div>
-                </motion.article>
-              );
-            })}
+      <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Controls Bar & Category Filter */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700  bg-blue-50  px-3 py-1 rounded-md border border-blue-100 ">
+              Sektor Keunggulan
+            </span>
+            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900  mt-1">
+              Potensi Wilayah
+            </h2>
           </div>
+
+          {/* Filter Bar Chips */}
+          {!loading && categories.length > 1 && (
+            <div className="flex items-center gap-1.5 p-1.5 bg-slate-200/60  rounded-2xl border border-slate-200/80  overflow-x-auto max-w-full">
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${
+                      isActive
+                        ? 'bg-blue-700 text-white shadow-xs'
+                        : 'text-slate-600  hover:text-slate-900  hover:bg-slate-100 '
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
+
+        {/* Content Body */}
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <PotensiSkeletonCard key={idx} />
+            ))}
+          </div>
+        ) : filteredPotensi.length > 0 ? (
+          <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <AnimatePresence>
+              {filteredPotensi.map((potensi, i) => (
+                <PotensiCard key={potensi.id} potensi={potensi} index={i} />
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          /* Empty State Jika Filter Tidak Menemukan Data */
+          <div className="py-16 text-center bg-white  rounded-3xl border border-slate-200  p-8 max-w-md mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50  border border-blue-100  flex items-center justify-center mx-auto mb-4 text-blue-700 ">
+              <Layers className="w-6 h-6" />
+            </div>
+            <h3 className="font-extrabold text-slate-900  text-base">
+              Belum Ada Data
+            </h3>
+            <p className="text-xs md:text-sm text-slate-500  mt-1">
+              Tidak ditemukan item potensi pada kategori <span className="font-semibold text-slate-700 ">"{selectedCategory}"</span>.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );
 }
+
 export default memo(PotensiKelurahan);
