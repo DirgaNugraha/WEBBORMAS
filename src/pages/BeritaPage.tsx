@@ -14,26 +14,25 @@ import {
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
 import { formatDate } from '../lib/format';
-import { createBeritaSlug } from '../lib/slug';
 import type { Berita } from '../types';
 
 // Component Skeleton Loading Kartu Berita
 function BeritaSkeletonCard() {
   return (
-    <div className="bg-white  rounded-2xl border border-slate-200/90  overflow-hidden shadow-xs animate-pulse flex flex-col">
-      <div className="h-52 w-full bg-slate-200 " />
+    <div className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-xs animate-pulse flex flex-col">
+      <div className="h-52 w-full bg-slate-200" />
       <div className="p-5 space-y-3 flex-1 flex flex-col justify-between">
         <div className="space-y-2">
-          <div className="h-5 bg-slate-200  rounded w-5/6" />
-          <div className="h-5 bg-slate-200  rounded w-2/3" />
+          <div className="h-5 bg-slate-200 rounded w-5/6" />
+          <div className="h-5 bg-slate-200 rounded w-2/3" />
         </div>
         <div className="space-y-2 pt-2">
-          <div className="h-3.5 bg-slate-200  rounded w-full" />
-          <div className="h-3.5 bg-slate-200  rounded w-4/5" />
+          <div className="h-3.5 bg-slate-200 rounded w-full" />
+          <div className="h-3.5 bg-slate-200 rounded w-4/5" />
         </div>
-        <div className="pt-3 border-t border-slate-100  flex items-center justify-between">
-          <div className="h-3 bg-slate-200  rounded w-24" />
-          <div className="h-3 bg-slate-200  rounded w-20" />
+        <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+          <div className="h-3 bg-slate-200 rounded w-24" />
+          <div className="h-3 bg-slate-200 rounded w-20" />
         </div>
       </div>
     </div>
@@ -52,12 +51,13 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
     >
+      {/* Perbaikan Tautan Route: Menggunakan berita.slug || berita.id */}
       <Link
-        to={`/berita/${createBeritaSlug(berita.judul, berita.tanggal)}`}
-        className="group bg-white  border border-slate-200/90  rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300  hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+        to={`/berita/${berita.slug || berita.id}`}
+        className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
       >
         {/* Visual Media Container */}
-        <div className="relative h-52 w-full bg-slate-100  overflow-hidden shrink-0 flex items-center justify-center">
+        <div className="relative h-52 w-full bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
           {hasPhoto ? (
             <img
               src={berita.gambar}
@@ -66,7 +66,7 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200   flex flex-col items-center justify-center text-slate-400 ">
+            <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex flex-col items-center justify-center text-slate-400">
               <ImageOff className="w-8 h-8 mb-1.5 opacity-50" />
               <span className="text-xs font-medium">Gambar Tidak Tersedia</span>
             </div>
@@ -94,25 +94,25 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
         <div className="p-5 flex-1 flex flex-col justify-between">
           <div>
             <div className="flex items-start justify-between gap-2 mb-2">
-              <h3 className="font-extrabold text-slate-900  text-base md:text-lg group-hover:text-blue-700  transition-colors line-clamp-2 leading-snug">
+              <h3 className="font-extrabold text-slate-900 text-base md:text-lg group-hover:text-blue-700 transition-colors line-clamp-2 leading-snug">
                 {berita.judul}
               </h3>
-              <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-blue-700  group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
+              <ArrowUpRight className="w-4 h-4 text-slate-400 group-hover:text-blue-700 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
             </div>
 
-            <p className="text-xs md:text-sm text-slate-600  line-clamp-2 leading-relaxed mb-4">
+            <p className="text-xs md:text-sm text-slate-600 line-clamp-2 leading-relaxed mb-4">
               {berita.excerpt}
             </p>
           </div>
 
           {/* Meta Footer */}
-          <div className="pt-3 border-t border-slate-100  flex items-center justify-between text-xs text-slate-500  font-medium">
+          <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
             <span className="inline-flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-blue-700 " />
+              <Calendar className="w-3.5 h-3.5 text-blue-700" />
               {formatDate(berita.tanggal)}
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <User className="w-3.5 h-3.5 text-blue-700 " />
+              <User className="w-3.5 h-3.5 text-blue-700" />
               {berita.penulis || 'Admin'}
             </span>
           </div>
@@ -155,12 +155,12 @@ function BeritaPage() {
   }, [allBerita, activeKategori, search]);
 
   return (
-    <div className="bg-slate-50  min-h-screen antialiased text-slate-800  pb-20">
+    <div className="bg-slate-50 min-h-screen antialiased text-slate-800 pb-20">
       {/* Page Header */}
       <PageHeader
         title="Berita Kelurahan"
         subtitle="Informasi terbaru seputar kegiatan, program kerja, dan peristiwa di Kelurahan Borimasunggu."
-        icon={<Newspaper className="w-8 h-8 text-blue-700 " />}
+        icon={<Newspaper className="w-8 h-8 text-blue-700" />}
       />
 
       <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -174,12 +174,12 @@ function BeritaPage() {
               placeholder="Cari berita atau pengumuman..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-2.5 text-xs md:text-sm bg-white  border border-slate-200  rounded-2xl focus:outline-hidden focus:border-blue-700  text-slate-900  placeholder:text-slate-400 shadow-xs transition-all"
+              className="w-full pl-11 pr-4 py-2.5 text-xs md:text-sm bg-white border border-slate-200 rounded-2xl focus:outline-hidden focus:border-blue-700 text-slate-900 placeholder:text-slate-400 shadow-xs transition-all"
             />
           </div>
 
           {/* Tab Filter Kategori */}
-          <div className="flex items-center gap-1.5 p-1.5 bg-slate-200/60  rounded-2xl border border-slate-200/80  overflow-x-auto max-w-full">
+          <div className="flex items-center gap-1.5 p-1.5 bg-slate-200/60 rounded-2xl border border-slate-200/80 overflow-x-auto max-w-full">
             {kategoriList.map((k) => {
               const active = activeKategori === k;
               return (
@@ -189,7 +189,7 @@ function BeritaPage() {
                   className={`px-4 py-2 rounded-xl text-xs md:text-sm font-bold transition-all whitespace-nowrap ${
                     active
                       ? 'bg-blue-700 text-white shadow-xs'
-                      : 'text-slate-600  hover:text-slate-900  hover:bg-slate-100 '
+                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   }`}
                 >
                   {k}
@@ -216,14 +216,14 @@ function BeritaPage() {
           </motion.div>
         ) : (
           /* Empty State */
-          <div className="py-16 text-center bg-white  rounded-3xl border border-slate-200  p-8 max-w-md mx-auto">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50  border border-blue-100  flex items-center justify-center mx-auto mb-4 text-blue-700 ">
+          <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto">
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4 text-blue-700">
               <Inbox className="w-6 h-6" />
             </div>
-            <h3 className="font-extrabold text-slate-900  text-base">
+            <h3 className="font-extrabold text-slate-900 text-base">
               Berita Tidak Ditemukan
             </h3>
-            <p className="text-xs md:text-sm text-slate-500  mt-1">
+            <p className="text-xs md:text-sm text-slate-500 mt-1">
               Tidak ada publikasi artikel yang cocok dengan kata kunci atau filter kategori yang dipilih.
             </p>
           </div>

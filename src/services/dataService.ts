@@ -1,5 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 import { navItems } from '../data/navigation';
+import { createBeritaSlug } from '../lib/slug'; // 👈 1. IMPORT HELPER SLUG
 import type {
   NavItem,
   KelurahanInfo,
@@ -15,12 +16,9 @@ import type {
 
 // Helper internal untuk konversi data Supabase ke tipe Berita di React
 function formatBeritaItem(item: any): Berita {
-  // Generate slug otomatis dari judul jika di DB belum ada/kosong
+  // Gunakan createBeritaSlug agar format slug konsisten (judul + tanggal)
   const autoSlug = item.judul
-    ? item.judul
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)+/g, '')
+    ? createBeritaSlug(item.judul, item.tanggal)
     : item.id;
 
   return {
@@ -138,7 +136,7 @@ export const dataService = {
     return formatBeritaItem(data);
   },
 
-  // 🟢 PENCARIAN FLEKSIBEL (SUPPORT SLUG DAN UUID)
+  // 🟢 PENCARIAN FLEKSIBEL (SUPPORT SLUG, UUID, & GENERATED SLUG)
   async getBeritaBySlug(slug: string): Promise<Berita | undefined> {
     // 1. Jika URL berupa UUID, query langsung via ID
     if (isUUID(slug)) {
@@ -156,9 +154,21 @@ export const dataService = {
       return formatBeritaItem(dataBySlug);
     }
 
-    // 3. Fallback: Ambil semua data lalu cari berita yang slug hasil konversi judulnya cocok
+    // 3. Fallback: Cari di semua berita dengan beberapa alternatif match
     const allBerita = await this.getBeritaList();
-    return allBerita.find((item) => item.slug === slug);
+    return allBerita.find((item) => {
+      const generatedSlug = createBeritaSlug(item.judul, item.tanggal);
+      const titleOnlySlug = item.judul
+        ? item.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
+        : '';
+
+      return (
+        item.slug === slug ||
+        generatedSlug === slug ||
+        titleOnlySlug === slug ||
+        String(item.id) === slug
+      );
+    });
   },
 
   // ============================================================
