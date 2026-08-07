@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Calendar, User, Share2, Clock, ExternalLink, Globe } from 'lucide-react';
 import { dataService } from '../services/dataService';
 import { formatDate } from '../lib/format';
-import { createBeritaSlug } from '../lib/slug';
 import type { Berita } from '../types';
 
 // Menampilkan jarak waktu relatif, mis. "1 minggu yang lalu"
@@ -44,12 +43,13 @@ function BeritaDetail() {
       if (!slug) return;
       setLoading(true);
 
-      // 1. Ambil detail berita berdasarkan slug/UUID
+      // 1. Ambil detail berita berdasarkan slug murni
       const detail = await dataService.getBeritaBySlug(slug);
       setBerita(detail || null);
 
-      // 2. Ambil daftar berita lain untuk sidebar
-      const all = await dataService.getBeritaList();
+      // 2. Tarik data untuk sidebar
+      const all = await dataService.getRecentBerita ? await dataService.getRecentBerita(4) : await dataService.getBeritaList();
+      
       if (detail) {
         setBeritaLainnya(all.filter((b) => b.id !== detail.id).slice(0, 3));
       } else {
@@ -229,9 +229,10 @@ function BeritaDetail() {
                 </h2>
                 <div className="space-y-4">
                   {beritaLainnya.map((b) => (
+                    // 🟢 PERBAIKAN: Routing mutlak menggunakan slug
                     <Link
                       key={b.id}
-                      to={`/berita/${b.slug || createBeritaSlug(b.judul, b.tanggal)}`}
+                      to={`/berita/${b.slug}`}
                       className="flex gap-3.5 p-2 rounded-xl hover:bg-slate-50  transition-colors group"
                     >
                       {b.gambar ? (

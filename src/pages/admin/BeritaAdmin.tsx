@@ -4,7 +4,7 @@ import Modal from '../../components/Modal';
 import ImageUpload from '../../components/admin/Imageupload';
 import { adminService } from '../../services/Adminservice';
 import { formatDate } from '../../lib/format';
-import { createBeritaSlug } from '../../lib/slug'; // 👈 Menggunakan helper slug resmi Anda
+import { createBeritaSlug } from '../../lib/slug'; 
 import type { Berita } from '../../types';
 
 // Helper menyesuaikan format ISO UTC ke string YYYY-MM-THH:mm lokal untuk input datetime-local
@@ -114,12 +114,11 @@ function BeritaAdmin() {
     setSaving(true);
     setFormError('');
 
-    // 🟢 Generate slug sesuai dengan format dari slug.ts (Judul + Tanggal ID)
-    const slug = createBeritaSlug(form.judul.trim(), form.tanggal);
-
     const payload = {
       judul: form.judul.trim(),
-      slug: slug, // 👈 Tersimpan dengan format seperti "judul-berita-8-juli-2026"
+      // 🟢 PERBAIKAN: Hanya set slug jika berita baru dibuat
+      // Jika edit (editingId ada), jangan kirim atribut slug
+      ...( !editingId && { slug: createBeritaSlug(form.judul.trim(), form.tanggal) } ),
       kategori: form.kategori,
       excerpt: form.excerpt.trim(),
       konten: form.konten.trim(),

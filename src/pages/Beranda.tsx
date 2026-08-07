@@ -337,8 +337,9 @@ function Beranda() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.08 }}
                   >
+                    {/* 🟢 PERBAIKAN: Routing mutlak menggunakan slug */}
                     <Link
-                      to={`/berita/${berita.slug || berita.id}`}
+                      to={`/berita/${berita.slug}`}
                       className="group bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all duration-300"
                     >
                       <div className="sm:w-52 h-48 sm:h-auto shrink-0 overflow-hidden relative">

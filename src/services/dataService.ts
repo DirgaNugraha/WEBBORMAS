@@ -301,4 +301,33 @@ export const dataService = {
     }
     return data as StatItem[];
   },
+  // Fungsi khusus untuk mengambil berita dengan limit agar load sidebar jauh lebih cepat
+async getRecentBerita(limit: number = 4): Promise<Berita[]> {
+  try {
+    const { data, error } = await supabase
+      .from('berita')
+      .select('*')
+      .order('tanggal', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return (data as any[])?.map((row) => ({
+      id: row.id,
+      judul: row.judul,
+      kategori: row.kategori,
+      excerpt: row.excerpt,
+      konten: row.konten,
+      gambar: row.gambar,
+      tanggal: row.tanggal,
+      penulis: row.penulis,
+      isEksternal: row.is_eksternal,
+      namaSumber: row.nama_sumber,
+      linkAsli: row.link_asli,
+      slug: row.slug
+    })) || [];
+  } catch (err) {
+    console.error('Error fetching recent berita:', err);
+    return [];
+  }
+}
 };

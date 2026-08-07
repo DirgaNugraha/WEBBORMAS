@@ -51,9 +51,9 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
       viewport={{ once: true }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
     >
-      {/* Perbaikan Tautan Route: Menggunakan berita.slug || berita.id */}
+      {/* 🟢 PERBAIKAN: Menggunakan berita.slug murni */}
       <Link
-        to={`/berita/${berita.slug || berita.id}`}
+        to={`/berita/${berita.slug}`}
         className="group bg-white border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
       >
         {/* Visual Media Container */}
