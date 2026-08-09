@@ -17,20 +17,22 @@ const LayananAdmin = lazy(() => import('../pages/admin/LayananAdmin'));
 const PesanKontakAdmin = lazy(() => import('../pages/admin/PesanKontakAdmin'));
 const EditProfil = lazy(() => import('../pages/admin/EditProfil'));
 
-// Konfigurasi route admin agar mudah ditambah halaman baru
+// Konfigurasi route admin agar mudah ditambah halaman baru.
+// Catatan: `AdminRoutes` dirender di dalam `<Route path="/admin/*">` di App.tsx,
+// sehingga path di sini harus RELATIF (tanpa prefix /admin).
 const adminRoutes = [
-  { path: '/admin/dashboard', element: <Dashboard /> },
-  { path: '/admin/profil', element: <ProfilAdmin /> },
-  { path: '/admin/pejabat', element: <PejabatAdmin /> },
-  { path: '/admin/statistik', element: <StatistikAdmin /> },
-  { path: '/admin/program', element: <ProgramAdmin /> },
-  { path: '/admin/berita', element: <BeritaAdmin /> },
-  { path: '/admin/agenda', element: <AgendaAdmin /> },
-  { path: '/admin/galeri', element: <GaleriAdmin /> },
-  { path: '/admin/potensi', element: <PotensiAdmin /> },
-  { path: '/admin/layanan', element: <LayananAdmin /> },
-  { path: '/admin/pesan-kontak', element: <PesanKontakAdmin /> },
-  { path: '/admin/edit-profil', element: <EditProfil /> },
+  { path: 'dashboard', element: <Dashboard /> },
+  { path: 'profil', element: <ProfilAdmin /> },
+  { path: 'pejabat', element: <PejabatAdmin /> },
+  { path: 'statistik', element: <StatistikAdmin /> },
+  { path: 'program', element: <ProgramAdmin /> },
+  { path: 'berita', element: <BeritaAdmin /> },
+  { path: 'agenda', element: <AgendaAdmin /> },
+  { path: 'galeri', element: <GaleriAdmin /> },
+  { path: 'potensi', element: <PotensiAdmin /> },
+  { path: 'layanan', element: <LayananAdmin /> },
+  { path: 'pesan-kontak', element: <PesanKontakAdmin /> },
+  { path: 'edit-profil', element: <EditProfil /> },
 ];
 
 export default function AdminRoutes() {
