@@ -2,12 +2,21 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
+interface ProfileUpdate {
+  email?: string;
+  full_name?: string;
+  avatar_url?: string;
+  password?: string;
+}
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  updateProfile: (updates: ProfileUpdate) => Promise<{ error: string | null }>;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -47,8 +56,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const updateProfile = async (updates: ProfileUpdate) => {
+    const payload: {
+      email?: string;
+      password?: string;
+      data?: { full_name?: string; avatar_url?: string };
+    } = {};
+
+    if (updates.email) payload.email = updates.email;
+    if (updates.password) payload.password = updates.password;
+
+    const metadata: { full_name?: string; avatar_url?: string } = {};
+    if (updates.full_name !== undefined) metadata.full_name = updates.full_name;
+    if (updates.avatar_url !== undefined) metadata.avatar_url = updates.avatar_url;
+    if (Object.keys(metadata).length > 0) payload.data = metadata;
+
+    const { error } = await supabase.auth.updateUser(payload);
+    if (error) {
+      console.error('Gagal memperbarui profil:', error.message);
+      return { error: error.message };
+    }
+
+    // Perbarui state user lokal agar UI ter-update
+    const { data: { user: updatedUser } } = await supabase.auth.getUser();
+    setUser(updatedUser);
+    return { error: null };
+  };
+
+  const refreshUser = async () => {
+    const { data: { user: current } } = await supabase.auth.getUser();
+    setUser(current);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, loading, signIn, signOut }}>
+    <AuthContext.Provider
+      value={{ user, session, loading, signIn, signOut, updateProfile, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

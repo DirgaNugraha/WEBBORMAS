@@ -3,7 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Newspaper, CalendarDays, Images, Briefcase, Sprout,
   Building2, Users, BarChart3,
-  Mail, Menu, X, LogOut,
+  Mail, Menu, X, LogOut, UserCog,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoKpKp from '../../aset/logopkp.png';
@@ -19,6 +19,7 @@ const menuItems = [
   { to: '/admin/potensi', label: 'Potensi Kelurahan', icon: Sprout },
   { to: '/admin/layanan', label: 'Layanan Publik', icon: Briefcase },
   { to: '/admin/pesan-kontak', label: 'Pesan Kontak', icon: Mail },
+  { to: '/admin/edit-profil', label: 'Edit Profil', icon: UserCog },
 ];
 
 function AdminLayout({ children }: { children: ReactNode }) {
@@ -110,11 +111,22 @@ function AdminLayout({ children }: { children: ReactNode }) {
             <Menu className="w-6 h-6" />
           </button>
           <div className="ml-auto flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center text-white text-sm font-semibold">
-              {user?.email?.charAt(0).toUpperCase()}
-            </div>
-            <span className="text-sm font-medium text-slate-700  hidden sm:block">
-              {user?.email}
+            {user?.user_metadata?.avatar_url ? (
+              <img
+                src={user.user_metadata.avatar_url}
+                alt="Foto profil"
+                className="w-8 h-8 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center text-white text-sm font-semibold overflow-hidden">
+                {(user?.user_metadata?.full_name || user?.email)?.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span
+              className="text-sm font-medium text-slate-700  hidden sm:block max-w-[14rem] truncate"
+              title={user?.email}
+            >
+              {user?.user_metadata?.full_name || user?.email}
             </span>
           </div>
         </header>

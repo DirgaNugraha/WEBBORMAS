@@ -31,6 +31,7 @@ import GaleriAdmin from './pages/admin/Galeriadmin';
 import PotensiAdmin from './pages/admin/Potensiadmin';
 import LayananAdmin from './pages/admin/Layananadmin';
 import PesanKontakAdmin from './pages/admin/PesanKontakAdmin';
+import EditProfil from './pages/admin/EditProfil';
 
 // Scroll ke atas setiap kali pindah halaman
 function ScrollToTop() {
@@ -116,6 +117,10 @@ function App() {
           <Route
             path="/admin/pesan-kontak"
             element={<ProtectedRoute><AdminLayout><PesanKontakAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/edit-profil"
+            element={<ProtectedRoute><AdminLayout><EditProfil /></AdminLayout></ProtectedRoute>}
           />
 
           {/* Semua route selain /admin/* masuk ke layout publik */}

@@ -1,8 +1,9 @@
-# TODO: Hapus Dark Mode
+# TODO — Fitur Edit Profil Admin
 
-- [x] Hapus file `src/context/ThemeContext.tsx` dan `src/hooks/useTheme.ts`
-- [x] Bersihkan `src/App.tsx` (hapus import & wrapper `ThemeProvider`)
-- [x] Bersihkan `src/layouts/Navbar.tsx` (hapus useTheme + tombol toggle Moon/Sun)
-- [x] Hapus `darkMode: 'class'` di `tailwind.config.js`
-- [x] Hapus semua kelas `dark:` di seluruh file `.tsx` dan `.css`
-- [x] Verifikasi build (`npm run build`)
+## Langkah Pengerjaan
+- [x] 1. Perluas `src/context/AuthContext.tsx` — tambah `updateProfile` & `refreshUser`
+- [x] 2. Buat halaman `src/pages/admin/EditProfil.tsx`
+- [x] 3. Tambah route `/admin/edit-profil` di `src/App.tsx`
+- [x] 4. Tambah menu & tampilkan nama/foto admin di `src/components/admin/AdminLayout.tsx`
+- [x] 5. Uji coba build (tsc / vite build)
+
