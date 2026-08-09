@@ -115,10 +115,10 @@ function ProfilKelurahan() {
   const infoStats = [
     { icon: MapPin, label: 'Alamat Kantor', value: kelurahanInfo.alamat, span: 'col-span-full lg:col-span-2' },
     { icon: Clock, label: 'Jam Operasional Layanan', value: kelurahanInfo.jamLayanan, span: 'col-span-1' },
-    { icon: Users, label: 'Total Populer Kependudukan', value: `${kelurahanInfo.jumlahPenduduk.toLocaleString('id-ID')} Jiwa`, span: 'col-span-1' },
-    { icon: Map, label: 'Cakupan Luas Wilayah', value: kelurahanInfo.luasWilayah, span: 'col-span-1' },
-    { icon: Phone, label: 'Kontak Resmi Hotline', value: kelurahanInfo.telepon, span: 'col-span-1' },
-    { icon: Mail, label: 'Surel / Email Resmi', value: kelurahanInfo.email, span: 'col-span-1 lg:col-span-2' },
+    { icon: Users, label: 'Jumlah Penduduk', value: `${kelurahanInfo.jumlahPenduduk.toLocaleString('id-ID')} Jiwa`, span: 'col-span-1' },
+    { icon: Map, label: 'Luas Wilayah', value: kelurahanInfo.luasWilayah, span: 'col-span-1' },
+    { icon: Phone, label: 'Kontak', value: kelurahanInfo.telepon, span: 'col-span-1' },
+    { icon: Mail, label: 'Email', value: kelurahanInfo.email, span: 'col-span-1 lg:col-span-2' },
   ];
 
   return (
@@ -172,7 +172,7 @@ function ProfilKelurahan() {
           <div className="max-w-4xl relative z-10">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 border border-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider mb-4">
               <Building2 className="w-3.5 h-3.5 text-blue-700" />
-              <span>Rekam Jejak Wilayah</span>
+              <span>Selayang Pandang</span>
             </div>
 
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight mb-6">
@@ -181,22 +181,6 @@ function ProfilKelurahan() {
 
             <div className="prose prose-slate max-w-none text-slate-600 text-base md:text-lg leading-relaxed whitespace-pre-line">
               {kelurahanInfo.sejarah}
-            </div>
-
-            {/* Guarantees / Keunggulan */}
-            <div className="grid sm:grid-cols-3 gap-4 pt-8 mt-8 border-t border-slate-100">
-              <div className="flex items-center gap-3">
-                <ShieldCheck className="w-5 h-5 text-blue-700 shrink-0" />
-                <span className="text-xs font-semibold text-slate-700">Pemerintahan Akuntabel</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <UserCheck className="w-5 h-5 text-blue-700 shrink-0" />
-                <span className="text-xs font-semibold text-slate-700">Pelayanan Berbasis Warga</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Award className="w-5 h-5 text-blue-700 shrink-0" />
-                <span className="text-xs font-semibold text-slate-700">Integritas Tinggi</span>
-              </div>
             </div>
           </div>
         </div>
@@ -290,7 +274,7 @@ function ProfilKelurahan() {
         <SectionTitle
           badge="Aparatur Kelurahan"
           title="Struktur Organisasi & Pejabat"
-          subtitle="Susunan jajaran pemerintah kelurahan yang siap memberikan pelayanan publik yang ramah, profesional, dan akuntabel."
+          subtitle="Susunan jajaran pemerintah kelurahan Borimasunggu"
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mt-12">

@@ -80,79 +80,79 @@ const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
 
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
-{/* Hero Section */}
-<section className="relative h-screen w-full flex flex-col justify-between items-center overflow-hidden border-b border-slate-200/20">
-  {/* Background & Overlay */}
-  <div className="absolute inset-0 z-0">
-    <img
-      src={kantorlurah}
-      alt="Kantor Kelurahan Borimasunggu"
-      className="w-full h-full object-cover object-center filter brightness-[0.6]"
-    />
-    {/* Dark Gradient Overlay */}
-    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/90" />
-    <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
-  </div>
+      {/* Hero Section */}
+      <section className="relative h-screen w-full flex flex-col justify-between items-center overflow-hidden border-b border-slate-200/20">
+        {/* Background & Overlay */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src={kantorlurah}
+            alt="Kantor Kelurahan Borimasunggu"
+            className="w-full h-full object-cover object-center filter brightness-[0.6]"
+          />
+          {/* Dark Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/90" />
+          <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
+        </div>
 
-  {/* Top Spacer untuk menyeimbangkan layout vertikal */}
-  <div className="w-full h-24 sm:h-28" />
+        {/* Top Spacer untuk menyeimbangkan layout vertikal */}
+        <div className="w-full h-24 sm:h-28" />
 
-  {/* Main Content */}
-  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      className="max-w-5xl mx-auto text-center flex flex-col items-center space-y-6"
-    >
-      {/* Title - Pas & Proporsional dalam 1 Baris */}
-      <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none drop-shadow-md">
-        Kelurahan{" "}
-        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-blue-400">
-          Borimasunggu
-        </span>
-      </h1>
+        {/* Main Content */}
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="max-w-5xl mx-auto text-center flex flex-col items-center space-y-6"
+          >
+            {/* Title - Pas & Proporsional dalam 1 Baris */}
+            <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none drop-shadow-md">
+              Kelurahan{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-blue-400">
+                Borimasunggu
+              </span>
+            </h1>
 
-      {/* Description */}
-      <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
-        Pusat transparansi informasi, tata kelola pemerintahan, dan integrasi layanan publik terpadu.
-      </p>
+            {/* Description */}
+            <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
+              Pusat transparansi informasi, tata kelola pemerintahan, dan integrasi layanan publik terpadu.
+            </p>
 
-      {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto pt-2">
-        <Link
-          to="/layanan"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-blue-600/30"
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto pt-2">
+              <Link
+                to="/layanan"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-blue-600/30"
+              >
+                <span>Layanan Publik</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                to="/kontak"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-sm backdrop-blur-md border border-white/15 transition-all duration-200"
+              >
+                <MessageSquare className="w-4 h-4 text-blue-300" />
+                <span>Pengaduan Warga</span>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll Indicator - Minimalis & Smooth */}
+        <div 
+          className="relative z-10 pb-6 flex flex-col items-center gap-1 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
         >
-          <span>Layanan Publik</span>
-          <ArrowRight className="w-4 h-4" />
-        </Link>
-
-        <Link
-          to="/kontak"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-sm backdrop-blur-md border border-white/15 transition-all duration-200"
-        >
-          <MessageSquare className="w-4 h-4 text-blue-300" />
-          <span>Pengaduan Warga</span>
-        </Link>
-      </div>
-    </motion.div>
-  </div>
-
-  {/* Scroll Indicator - Minimalis & Smooth */}
-  <div 
-    className="relative z-10 pb-6 flex flex-col items-center gap-1 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
-    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
-  >
-    <span className="text-[10px] tracking-widest uppercase font-medium text-slate-400">Scroll</span>
-    <motion.div
-      animate={{ y: [0, 5, 0] }}
-      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-    >
-      <ChevronDown className="w-4 h-4 text-blue-300" />
-    </motion.div>
-  </div>
-</section>
+          <span className="text-[10px] tracking-widest uppercase font-medium text-slate-400">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ChevronDown className="w-4 h-4 text-blue-300" />
+          </motion.div>
+        </div>
+      </section>
 
       {/* Section Profil Singkat & Peta */}
       <section className="py-16 bg-slate-50/50 border-b border-slate-200">

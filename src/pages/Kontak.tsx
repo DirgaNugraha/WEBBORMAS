@@ -134,14 +134,14 @@ function Kontak() {
     },
     { 
       icon: Phone, 
-      label: 'Hotline / WhatsApp Resmi', 
+      label: 'Kontak', 
       value: kelurahanInfo.telepon, 
       badge: 'Respon Cepat',
       iconColor: 'text-emerald-700 bg-emerald-50 border-emerald-100'
     },
     { 
       icon: Mail, 
-      label: 'Surel (Email) Resmi', 
+      label: 'Email', 
       value: kelurahanInfo.email, 
       badge: 'Surat-menyurat',
       iconColor: 'text-indigo-700 bg-indigo-50 border-indigo-100'
