@@ -84,7 +84,7 @@ export function buildWaLink(
 ): string {
   const number = sanitizeWaNumber(telepon);
   const message =
-    `Halo ${nama}, terima kasih telah menghubungi Pemerintah Kelurahan. ` +
+    `Halo ${nama}, terima kasih telah menggunakan layanan aduan Kelurahan Borimasunggu. ` +
     `Mengenai laporan Anda: "${subjek}", kami akan segera menindaklanjuti.`;
   return `https://wa.me/${number}?text=${encodeURIComponent(message)}`;
 }
