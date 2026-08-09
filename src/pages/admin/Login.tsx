@@ -1,7 +1,7 @@
 import { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, Mail, LogIn, AlertCircle } from 'lucide-react';
+import { Lock, Mail, LogIn, AlertCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import logoKpKp from "../../aset/logopkp.png";
 
@@ -31,36 +31,33 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-50  px-4">
+    <div className="min-h-screen flex items-center justify-center bg-slate-50/80 px-4 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="card p-8 md:p-10 w-full max-w-md"
+        className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-10 w-full max-w-md shadow-xl"
       >
-        <div className="flex flex-col items-center mb-8">
-            <div className="relative">
-              <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-600 to-secondary-600 flex items-center justify-center shadow-lg shadow-primary-600/30 group-hover:scale-105 transition-transform">
-                <img
-                  src={logoKpKp}
-                  alt="Logo Kelurahan Borimasunggu"
-                  className="w-8 h-8 object-contain"
-                />
-
-              </div>
-            </div>
-          <h1 className="text-2xl font-bold text-slate-900 ">Admin Kelurahan</h1>
-          <p className="text-sm text-slate-500  mt-1">
-            Masuk untuk mengelola konten website
+        {/* LOGO & TITLE */}
+        <div className="flex flex-col items-center mb-8 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-700 to-indigo-800 flex items-center justify-center shadow-lg shadow-blue-700/20 mb-4">
+            <img
+              src={logoKpKp}
+              alt="Logo Kelurahan Borimasunggu"
+              className="w-9 h-9 object-contain"
+            />
+          </div>
+          <h1 className="text-xl font-bold text-slate-900 tracking-tight">Portal Admin Kelurahan</h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Masuk dengan kredensial Anda untuk mengelola informasi publik.
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-slate-700  mb-1.5">
-              Email
-            </label>
+        {/* FORM LOGIN */}
+        <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+          <div className="space-y-1">
+            <label className="font-bold text-slate-700">Alamat Email *</label>
             <div className="relative">
-              <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 value={email}
@@ -68,17 +65,15 @@ function Login() {
                 required
                 autoFocus
                 placeholder="admin@borimasunggu.go.id"
-                className="input-field pl-10"
+                className="w-full pl-10 pr-3.5 py-2.5 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden"
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700  mb-1.5">
-              Password
-            </label>
+          <div className="space-y-1">
+            <label className="font-bold text-slate-700">Kata Sandi *</label>
             <div className="relative">
-              <Lock className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="password"
                 value={password}
@@ -86,7 +81,7 @@ function Login() {
                 required
                 minLength={6}
                 placeholder="••••••••"
-                className="input-field pl-10"
+                className="w-full pl-10 pr-3.5 py-2.5 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden"
               />
             </div>
           </div>
@@ -95,16 +90,20 @@ function Login() {
             <motion.div
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-3 rounded-xl bg-red-50  border border-red-200  text-red-700  text-sm"
+              className="flex items-center gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs"
             >
               <AlertCircle className="w-4 h-4 shrink-0" />
-              {error}
+              <span>{error}</span>
             </motion.div>
           )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full disabled:opacity-60">
-            {loading ? 'Memproses...' : 'Masuk'}
-            <LogIn className="w-4 h-4" />
+          <button 
+            type="submit" 
+            disabled={loading} 
+            className="w-full mt-2 inline-flex items-center justify-center gap-2 py-3 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-60"
+          >
+            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
+            <span>{loading ? 'Memverifikasi...' : 'Masuk ke Dashboard'}</span>
           </button>
         </form>
       </motion.div>

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { 
   Save, Globe, FileText, Link as LinkIcon, AlertCircle, User, 
-  Plus, Edit2, Trash2, X, Upload, Image as ImageIcon, Loader2 
+  Plus, Edit2, Trash2, X, Image as ImageIcon, Loader2 
 } from 'lucide-react';
+import ImageUpload from '../../components/admin/Imageupload';
 import { supabase } from '../../lib/supabaseClient'; // Adjust path ke supabase client kamu
 import type { Berita } from '../../types';
 
@@ -102,24 +103,7 @@ export default function BeritaAdmin() {
     setIsModalOpen(true);
   };
 
-  // Convert Uploaded File ke Data Base64
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        setError('Ukuran gambar terlalu besar (Maksimal 2MB).');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setGambar(reader.result as string);
-        setError(null);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleToggleMode = (eksternal: boolean) => {
+const handleToggleMode = (eksternal: boolean) => {
     setIsEksternal(eksternal);
     setError(null);
     if (eksternal) {
@@ -234,7 +218,7 @@ export default function BeritaAdmin() {
 
       // Refresh data
       fetchBerita();
-    } catch (err: any) {
+} catch (err: any) {
       console.error('Gagal menghapus:', err.message);
       alert('Gagal menghapus berita: ' + err.message);
     }
@@ -495,35 +479,14 @@ export default function BeritaAdmin() {
                   </div>
                 )}
 
-                <div className="md:col-span-2 space-y-1">
+<div className="md:col-span-2 space-y-1">
                   <label className="text-xs font-bold text-slate-700">Gambar Cover / Banner</label>
-                  <div className="flex items-start gap-4">
-                    {gambar && (
-                      <div className="relative shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-slate-200">
-                        <img src={gambar} alt="Preview" className="w-full h-full object-cover" />
-                        <button
-                          type="button"
-                          onClick={() => setGambar('')}
-                          className="absolute top-1 right-1 p-0.5 bg-red-600 text-white rounded-full hover:bg-red-700 cursor-pointer"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-                    <label className="flex-1 border-2 border-dashed border-slate-200 rounded-xl p-4 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all">
-                      <Upload className="w-5 h-5 mx-auto text-slate-400 mb-1" />
-                      <span className="text-xs font-bold text-slate-600 block">
-                        Klik untuk Upload Gambar
-                      </span>
-                      <span className="text-[10px] text-slate-400">PNG, JPG, WEBP hingga 2MB</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
+                  <ImageUpload
+                    label=""
+                    value={gambar}
+                    onChange={(url) => setGambar(url)}
+                    folder="berita"
+                  />
                 </div>
 
                 <div className="md:col-span-2 space-y-1">

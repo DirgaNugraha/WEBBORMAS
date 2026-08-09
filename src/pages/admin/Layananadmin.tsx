@@ -1,5 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { 
+  Plus, Pencil, Trash2, Clock, Banknote, ListChecks, 
+  FileText, Loader2, AlertCircle, AlertTriangle 
+} from 'lucide-react';
 import Modal from '../../components/Modal';
 import IconPicker from '../../components/admin/Iconpicker';
 import ArrayInput from '../../components/admin/Arrayinput';
@@ -22,7 +25,7 @@ function LayananAdmin() {
   const loadData = useCallback(async () => {
     setLoading(true);
     const data = await adminService.list<Layanan>('layanan_publik', 'created_at', true);
-    setList(data);
+    setList(data || []);
     setLoading(false);
   }, []);
 
@@ -38,8 +41,12 @@ function LayananAdmin() {
   const openEdit = (item: Layanan) => {
     setEditingId(item.id);
     setForm({
-      nama: item.nama, deskripsi: item.deskripsi ?? '', icon: item.icon,
-      durasi: item.durasi ?? '', biaya: item.biaya ?? 'Gratis', syarat: item.syarat?.length ? item.syarat : [''],
+      nama: item.nama, 
+      deskripsi: item.deskripsi ?? '', 
+      icon: item.icon || 'FileText',
+      durasi: item.durasi ?? '', 
+      biaya: item.biaya ?? 'Gratis', 
+      syarat: item.syarat?.length ? item.syarat : [''],
     });
     setFormError('');
     setModalOpen(true);
@@ -54,7 +61,7 @@ function LayananAdmin() {
       ? await adminService.update('layanan_publik', editingId, payload)
       : await adminService.create('layanan_publik', payload);
     setSaving(false);
-    if (error) { setFormError('Gagal menyimpan data.'); return; }
+    if (error) { setFormError('Gagal menyimpan layanan.'); return; }
     setModalOpen(false);
     loadData();
   };
@@ -67,80 +74,248 @@ function LayananAdmin() {
   };
 
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 ">Layanan Publik</h1>
-          <p className="text-slate-500 ">Kelola daftar layanan administrasi kelurahan</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Layanan Publik</h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200/60">
+              {list.length} Layanan
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 mt-1">
+            Kelola syarat dan Prosedur Operasional Standar (SOP) pengurusan dokumen kelurahan.
+          </p>
         </div>
-        <button onClick={openCreate} className="btn-primary shrink-0"><Plus className="w-4 h-4" /> Tambah Layanan</button>
+        <button 
+          onClick={openCreate} 
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all shrink-0 cursor-pointer"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Tambah Layanan</span>
+        </button>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {loading ? (
-          <p className="text-slate-500  col-span-full text-center py-6">Memuat data...</p>
-        ) : list.length === 0 ? (
-          <p className="text-slate-500  col-span-full text-center py-6">Belum ada layanan.</p>
-        ) : (
-          list.map((item) => {
-            const Icon = getIcon(item.icon);
+      {/* GRID CARDS LAYANAN */}
+      {loading ? (
+        <div className="p-12 text-center text-slate-400 space-y-3 bg-white rounded-2xl border border-slate-200/80">
+          <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-700" />
+          <p className="text-xs font-medium text-slate-500">Memuat daftar layanan...</p>
+        </div>
+      ) : list.length === 0 ? (
+        <div className="p-12 text-center text-slate-400 space-y-3 bg-white rounded-2xl border border-slate-200/80">
+          <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto text-slate-400">
+            <FileText className="w-6 h-6" />
+          </div>
+          <p className="text-sm font-semibold text-slate-600">Belum Ada Layanan</p>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Daftar persyaratan layanan publik masih kosong. Tambahkan layanan baru sekarang.
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {list.map((item) => {
+            const IconComponent = getIcon(item.icon);
             return (
-              <div key={item.id} className="card p-5">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary-500 to-secondary-600 flex items-center justify-center mb-3">
-                  <Icon className="w-5.5 h-5.5 text-white" />
-                </div>
-                <p className="font-semibold text-sm text-slate-900  mb-1">{item.nama}</p>
-                <p className="text-xs text-slate-500  mb-3">{item.durasi} • {item.biaya}</p>
-                <div className="flex gap-2">
-                  <button onClick={() => openEdit(item)} className="text-xs font-medium text-primary-600  flex items-center gap-1"><Pencil className="w-3.5 h-3.5" /> Edit</button>
-                  <button onClick={() => setDeleteId(item.id)} className="text-xs font-medium text-red-600  flex items-center gap-1"><Trash2 className="w-3.5 h-3.5" /> Hapus</button>
+              <div 
+                key={item.id} 
+                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center shrink-0">
+                      <IconComponent className="w-5 h-5" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <button 
+                        onClick={() => openEdit(item)} 
+                        className="p-1.5 rounded-lg text-slate-600 hover:text-blue-700 hover:bg-blue-50 transition-colors cursor-pointer"
+                        title="Edit Layanan"
+                      >
+                        <Pencil className="w-3.5 h-3.5" />
+                      </button>
+                      <button 
+                        onClick={() => setDeleteId(item.id)} 
+                        className="p-1.5 rounded-lg text-slate-600 hover:text-rose-700 hover:bg-rose-50 transition-colors cursor-pointer"
+                        title="Hapus Layanan"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h3 className="font-bold text-sm text-slate-900 leading-snug">
+                      {item.nama}
+                    </h3>
+                    {item.deskripsi && (
+                      <p className="text-xs text-slate-500 line-clamp-2 mt-1">
+                        {item.deskripsi}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Metadata Chips */}
+                  <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium">
+                      <Clock className="w-3 h-3 text-slate-400" />
+                      {item.durasi || 'Sesuai Prosedur'}
+                    </span>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 font-bold border border-emerald-100">
+                      <Banknote className="w-3 h-3 text-emerald-600" />
+                      {item.biaya || 'Gratis'}
+                    </span>
+                  </div>
+
+                  {/* Syarat List Preview */}
+                  {item.syarat && item.syarat.length > 0 && (
+                    <div className="pt-2 border-t border-slate-100 space-y-1">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                        <ListChecks className="w-3 h-3" /> Syarat Berkas ({item.syarat.length})
+                      </p>
+                      <ul className="text-xs text-slate-600 space-y-0.5 list-disc list-inside">
+                        {item.syarat.slice(0, 2).map((s, idx) => (
+                          <li key={idx} className="truncate">{s}</li>
+                        ))}
+                        {item.syarat.length > 2 && (
+                          <li className="text-[10px] text-slate-400 list-none pt-0.5">
+                            +{item.syarat.length - 2} syarat lainnya
+                          </li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
             );
-          })
-        )}
-      </div>
+          })}
+        </div>
+      )}
 
+      {/* MODAL FORM */}
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-        <div className="p-6 md:p-8">
-          <h2 className="text-xl font-bold text-slate-900  mb-5">{editingId ? 'Edit Layanan' : 'Tambah Layanan'}</h2>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700  mb-1.5">Nama Layanan</label>
-              <input type="text" value={form.nama} onChange={(e) => setForm({ ...form, nama: e.target.value })} className="input-field" />
+        <div className="p-6 sm:p-8 space-y-5">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
+              {editingId ? 'Edit Layanan Publik' : 'Tambah Layanan Baru'}
+            </h2>
+          </div>
+
+          <div className="space-y-4 text-xs">
+            <div className="space-y-1">
+              <label className="font-bold text-slate-700">Nama Layanan *</label>
+              <input 
+                type="text" 
+                value={form.nama} 
+                onChange={(e) => setForm({ ...form, nama: e.target.value })} 
+                placeholder="Contoh: Surat Keterangan Domisili"
+                className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden" 
+              />
             </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-700  mb-1.5">Deskripsi</label>
-              <textarea value={form.deskripsi} onChange={(e) => setForm({ ...form, deskripsi: e.target.value })} rows={2} className="input-field resize-none" />
+
+            <div className="space-y-1">
+              <label className="font-bold text-slate-700">Deskripsi Singkat</label>
+              <textarea 
+                value={form.deskripsi} 
+                onChange={(e) => setForm({ ...form, deskripsi: e.target.value })} 
+                rows={2} 
+                placeholder="Penjelasan kegunaan dokumen ini..."
+                className="w-full p-3 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden resize-none" 
+              />
             </div>
-            <IconPicker label="Ikon" value={form.icon} onChange={(icon) => setForm({ ...form, icon })} />
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-700  mb-1.5">Durasi</label>
-                <input type="text" value={form.durasi} onChange={(e) => setForm({ ...form, durasi: e.target.value })} placeholder="1 hari kerja" className="input-field" />
+
+            <IconPicker 
+              label="Ikon Layanan *" 
+              value={form.icon} 
+              onChange={(icon) => setForm({ ...form, icon })} 
+            />
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700">Estimasi Waktu</label>
+                <input 
+                  type="text" 
+                  value={form.durasi} 
+                  onChange={(e) => setForm({ ...form, durasi: e.target.value })} 
+                  placeholder="Contoh: 1 Hari Kerja" 
+                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden" 
+                />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-700  mb-1.5">Biaya</label>
-                <input type="text" value={form.biaya} onChange={(e) => setForm({ ...form, biaya: e.target.value })} className="input-field" />
+
+              <div className="space-y-1">
+                <label className="font-bold text-slate-700">Biaya Administrasi</label>
+                <input 
+                  type="text" 
+                  value={form.biaya} 
+                  onChange={(e) => setForm({ ...form, biaya: e.target.value })} 
+                  placeholder="Gratis / Rp 0" 
+                  className="w-full px-3.5 py-2 text-xs border border-slate-200 rounded-xl focus:border-blue-700 focus:outline-hidden" 
+                />
               </div>
             </div>
-            <ArrayInput label="Syarat" values={form.syarat} onChange={(syarat) => setForm({ ...form, syarat })} placeholder="contoh: Fotokopi KTP" />
-            {formError && <div className="p-3 rounded-xl bg-red-50  text-red-700  text-sm">{formError}</div>}
-            <div className="flex gap-3 pt-2">
-              <button onClick={() => setModalOpen(false)} className="btn-outline flex-1">Batal</button>
-              <button onClick={handleSave} disabled={saving} className="btn-primary flex-1 disabled:opacity-60">{saving ? 'Menyimpan...' : 'Simpan'}</button>
+
+            <ArrayInput 
+              label="Persyaratan Berkas" 
+              values={form.syarat} 
+              onChange={(syarat) => setForm({ ...form, syarat })} 
+              placeholder="Contoh: Fotokopi KTP & KK" 
+            />
+
+            {formError && (
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{formError}</span>
+              </div>
+            )}
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <button 
+                type="button"
+                onClick={() => setModalOpen(false)} 
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button 
+                type="button"
+                onClick={handleSave} 
+                disabled={saving} 
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                <span>{saving ? 'Menyimpan...' : 'Simpan Layanan'}</span>
+              </button>
             </div>
           </div>
         </div>
       </Modal>
 
+      {/* MODAL CONFIRM DELETE */}
       <Modal isOpen={deleteId !== null} onClose={() => setDeleteId(null)}>
-        <div className="p-6 md:p-8 text-center">
-          <h2 className="text-lg font-bold text-slate-900  mb-2">Hapus layanan ini?</h2>
-          <p className="text-slate-500  mb-6">Tindakan ini tidak bisa dibatalkan.</p>
-          <div className="flex gap-3">
-            <button onClick={() => setDeleteId(null)} className="btn-outline flex-1">Batal</button>
-            <button onClick={handleDelete} className="btn-primary flex-1 !bg-red-600 hover:!bg-red-700">Hapus</button>
+        <div className="p-6 sm:p-8 text-center space-y-4">
+          <div className="w-12 h-12 bg-rose-50 text-rose-600 rounded-2xl flex items-center justify-center mx-auto border border-rose-100">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-base font-bold text-slate-900">Hapus Layanan Ini?</h2>
+            <p className="text-xs text-slate-500 max-w-xs mx-auto">
+              Layanan akan terhapus dari daftar petunjuk masyarakat di portal publik.
+            </p>
+          </div>
+          <div className="flex gap-2 pt-2">
+            <button 
+              onClick={() => setDeleteId(null)} 
+              className="flex-1 py-2.5 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors cursor-pointer"
+            >
+              Batal
+            </button>
+            <button 
+              onClick={handleDelete} 
+              className="flex-1 py-2.5 text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-xl shadow-xs transition-colors cursor-pointer"
+            >
+              Ya, Hapus
+            </button>
           </div>
         </div>
       </Modal>

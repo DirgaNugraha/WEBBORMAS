@@ -51,21 +51,21 @@ function Beranda() {
   // State untuk menyimpan Agenda yang sedang dipilih & Modal Detail
   const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
 
-  useEffect(() => {
+useEffect(() => {
     async function loadData() {
       setLoading(true);
       const [info, stats, galeri, agenda, berita] = await Promise.all([
         dataService.getKelurahanInfo(),
         dataService.getStatsData(),
-        dataService.getGaleriList(),
-        dataService.getUpcomingAgenda(),
-        dataService.getBeritaList(),
+        dataService.getRecentGaleri(4),
+        dataService.getRecentAgenda(3),
+        dataService.getRecentBerita(3),
       ]);
       setKelurahanInfo(info);
       setStatsData(stats);
-      setRecentGaleri(galeri.slice(0, 4));
-      setUpcomingAgenda(agenda.slice(0, 3));
-      setLatestBerita(berita.slice(0, 3));
+      setRecentGaleri(galeri);
+      setUpcomingAgenda(agenda);
+      setLatestBerita(berita);
       setLoading(false);
     }
     loadData();

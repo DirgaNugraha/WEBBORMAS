@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider } from './context/AuthContext';
 
@@ -71,7 +71,8 @@ function App() {
         <ScrollToTop />
         <Routes>
           {/* Login admin — tanpa AdminLayout/sidebar */}
-          <Route path="/admin" element={<Login />} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 
           {/* Halaman admin — dilindungi ProtectedRoute + pakai AdminLayout */}
           <Route

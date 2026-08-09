@@ -44,22 +44,20 @@ export interface Potensi {
 }
 
 export interface Berita {
-  id: string; // <-- Ubah dari number ke string (karena UUID)
+  id: string; // UUID dari Supabase
   slug?: string;
   judul: string;
   kategori: string;
   tanggal: string;
-  excerpt?: string;
+excerpt?: string;
   konten: string;
   gambar?: string;
   penulis?: string;
-  
-  // Kolom DB Supabase (snake_case)
-  is_eksternal?: boolean;
-  nama_sumber?: string;
-  link_asli?: string;
 
-  // Properti opsional frontend (camelCase)
+  // Properti frontend (camelCase), tanpa `null` agar kompatibel dengan
+  // atribut JSX seperti `src` dan `href` yang hanya menerima `string | undefined`.
+  // Kolom DB snake_case (is_eksternal, nama_sumber, link_asli) dikonversi
+  // terpusat di dataService (formatBeritaItem) menjadi `undefined` saat kosong.
   isEksternal?: boolean;
   namaSumber?: string;
   linkAsli?: string;
@@ -99,6 +97,7 @@ export interface StatItem {
   value: string;
   icon: string;
   color: string;
+  urutan?: number;
 }
 
 export interface ProgramItem {
@@ -115,3 +114,24 @@ export interface IconEntry {
 }
 
 export type AgendaFilter = 'all' | 'upcoming' | 'selesai';
+
+// ============================================================
+// PESAN KONTAK / PENGADUAN (public.pesan_kontak)
+// ============================================================
+export type PesanKontakStatus =
+  | 'baru'
+  | 'dibaca'
+  | 'ditindaklanjuti'
+  | 'selesai';
+
+export interface PesanKontak {
+  id: string; // uuid
+  nama: string;
+  telepon: string; // Nomor WhatsApp (format internasional 62xxx)
+  subjek: string;
+  pesan: string;
+  status: PesanKontakStatus;
+  catatan_admin?: string;
+  created_at: string;
+  updated_at?: string;
+}

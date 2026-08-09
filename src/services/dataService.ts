@@ -21,12 +21,13 @@ function formatBeritaItem(item: any): Berita {
     ? createBeritaSlug(item.judul, item.tanggal)
     : item.id;
 
-  return {
+return {
     ...item,
     slug: item.slug || autoSlug, // Prioritaskan slug dari DB, fallback ke autoSlug
+    gambar: item.gambar ?? undefined,
     isEksternal: item.is_eksternal ?? false,
-    namaSumber: item.nama_sumber ?? null,
-    linkAsli: item.link_asli ?? null,
+    namaSumber: item.nama_sumber ?? undefined,
+    linkAsli: item.link_asli ?? undefined,
   };
 }
 
@@ -42,33 +43,40 @@ export const dataService = {
     return navItems;
   },
 
-  // ============================================================
+// ============================================================
   // PROFIL KELURAHAN
   // ============================================================
   async getKelurahanInfo(): Promise<KelurahanInfo | null> {
     const { data, error } = await supabase
       .from('profil_kelurahan')
       .select('*')
-      .limit(1)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Gagal mengambil profil kelurahan:', error.message);
       return null;
     }
 
+    if (!data) return null;
+
     return {
-      kecamatan: data.kecamatan,
-      kabupaten: data.kabupaten,
-      alamat: data.alamat,
-      telepon: data.telepon,
-      email: data.email,
-      jamLayanan: data.jam_layanan,
-      jumlahPenduduk: data.jumlah_penduduk,
-      luasWilayah: data.luas_wilayah,
-      visi: data.visi,
+      nama: data.nama ?? '',
+      kecamatan: data.kecamatan ?? '',
+      kabupaten: data.kabupaten ?? '',
+      provinsi: data.provinsi ?? '',
+      alamat: data.alamat ?? '',
+      kodePos: data.kode_pos ?? '',
+      telepon: data.telepon ?? '',
+      email: data.email ?? '',
+      website: data.website ?? '',
+      jamLayanan: data.jam_layanan ?? '',
+      jumlahRW: data.jumlah_rw ?? 0,
+      jumlahRT: data.jumlah_rt ?? 0,
+      jumlahPenduduk: data.jumlah_penduduk ?? 0,
+      luasWilayah: data.luas_wilayah ?? '',
+      visi: data.visi ?? '',
       misi: data.misi ?? [],
-      sejarah: data.sejarah,
+      sejarah: data.sejarah ?? '',
     } as KelurahanInfo;
   },
 
@@ -126,14 +134,14 @@ export const dataService = {
       .from('berita')
       .select('*')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
     if (error) {
       console.error('Gagal mengambil detail berita:', error.message);
       return undefined;
     }
 
-    return formatBeritaItem(data);
+    return data ? formatBeritaItem(data) : undefined;
   },
 
   // 🟢 PENCARIAN FLEKSIBEL (SUPPORT SLUG, UUID, & GENERATED SLUG)
@@ -150,25 +158,32 @@ export const dataService = {
       .eq('slug', slug)
       .maybeSingle();
 
-    if (dataBySlug) {
+if (dataBySlug) {
       return formatBeritaItem(dataBySlug);
     }
 
-    // 3. Fallback: Cari di semua berita dengan beberapa alternatif match
-    const allBerita = await this.getBeritaList();
-    return allBerita.find((item) => {
-      const generatedSlug = createBeritaSlug(item.judul, item.tanggal);
-      const titleOnlySlug = item.judul
-        ? item.judul.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')
-        : '';
+// 3. Fallback: Coba kecocokan judul yang di-*slugify* langsung di sisi DB.
+    //    Query ini dibatasi dan hanya menjangkau data yang relevan, sehingga
+    //    lebih efisien daripada menarik seluruh baris tabel `berita`.
+    const titleToSlug = slug.replace(/-+/g, ' ');
+    const { data: dataByTitle } = await supabase
+      .from('berita')
+      .select('*')
+      .ilike('judul', `%${titleToSlug}%`)
+      .limit(1);
 
-      return (
-        item.slug === slug ||
-        generatedSlug === slug ||
-        titleOnlySlug === slug ||
-        String(item.id) === slug
-      );
-    });
+    if (dataByTitle && dataByTitle.length > 0) {
+      return formatBeritaItem(dataByTitle[0]);
+    }
+
+    // 4. Fallback terakhir: cocokkan ID (untuk slug yang ternyata berupa ID numerik).
+    const { data: dataById } = await supabase
+      .from('berita')
+      .select('*')
+      .eq('id', slug)
+      .maybeSingle();
+
+    return dataById ? formatBeritaItem(dataById) : undefined;
   },
 
   // ============================================================
@@ -301,33 +316,51 @@ export const dataService = {
     }
     return data as StatItem[];
   },
-  // Fungsi khusus untuk mengambil berita dengan limit agar load sidebar jauh lebih cepat
+// Fungsi khusus untuk mengambil berita dengan limit agar load sidebar jauh lebih cepat
 async getRecentBerita(limit: number = 4): Promise<Berita[]> {
-  try {
+    try {
+      const { data, error } = await supabase
+        .from('berita')
+        .select('*')
+        .order('tanggal', { ascending: false })
+        .limit(limit);
+
+      if (error) throw error;
+      return (data || []).map(formatBeritaItem);
+    } catch (err) {
+      console.error('Error fetching recent berita:', err);
+      return [];
+    }
+  },
+
+  // Fungsi khusus untuk mengambil galeri dengan limit (dipakai sidebar/beranda)
+  async getRecentGaleri(limit: number = 4): Promise<GaleriItem[]> {
     const { data, error } = await supabase
-      .from('berita')
+      .from('galeri')
       .select('*')
       .order('tanggal', { ascending: false })
       .limit(limit);
 
-    if (error) throw error;
-    return (data as any[])?.map((row) => ({
-      id: row.id,
-      judul: row.judul,
-      kategori: row.kategori,
-      excerpt: row.excerpt,
-      konten: row.konten,
-      gambar: row.gambar,
-      tanggal: row.tanggal,
-      penulis: row.penulis,
-      isEksternal: row.is_eksternal,
-      namaSumber: row.nama_sumber,
-      linkAsli: row.link_asli,
-      slug: row.slug
-    })) || [];
-  } catch (err) {
-    console.error('Error fetching recent berita:', err);
-    return [];
-  }
-}
+    if (error) {
+      console.error('Gagal mengambil recent galeri:', error.message);
+      return [];
+    }
+    return (data as GaleriItem[]) ?? [];
+  },
+
+  // Fungsi khusus untuk mengambil agenda dengan limit (dipakai beranda)
+  async getRecentAgenda(limit: number = 3): Promise<Agenda[]> {
+    const { data, error } = await supabase
+      .from('agenda')
+      .select('*')
+      .eq('status', 'upcoming')
+      .order('tanggal', { ascending: true })
+      .limit(limit);
+
+    if (error) {
+      console.error('Gagal mengambil recent agenda:', error.message);
+      return [];
+    }
+    return (data as Agenda[]) ?? [];
+  },
 };

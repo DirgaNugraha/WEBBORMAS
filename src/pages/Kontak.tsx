@@ -17,16 +17,17 @@ import {
 import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabaseClient';
+import { sanitizeWaNumber, validateWaNumber } from '../lib/format';
 import type { KelurahanInfo } from '../types';
 
 interface ContactForm {
   nama: string;
-  email: string;
+  telepon: string;
   subjek: string;
   pesan: string;
 }
 
-const initialForm: ContactForm = { nama: '', email: '', subjek: '', pesan: '' };
+const initialForm: ContactForm = { nama: '', telepon: '', subjek: '', pesan: '' };
 
 function Kontak() {
   const [kelurahanInfo, setKelurahanInfo] = useState<KelurahanInfo | null>(null);
@@ -48,11 +49,38 @@ function Kontak() {
     setSending(true);
     setSubmitError('');
 
+    // Validasi sisi-klien sebagai lapisan keamanan dasar:
+    // hindari spam field kosong dan batasi panjang input.
+    const nama = form.nama.trim();
+    const telepon = form.telepon.trim();
+    const subjek = form.subjek.trim();
+    const pesan = form.pesan.trim();
+
+    if (!nama || !telepon || !subjek || !pesan) {
+      setSending(false);
+      setSubmitError('Mohon lengkapi semua kolom pada formulir.');
+      return;
+    }
+    if (nama.length > 120 || subjek.length > 200 || pesan.length > 5000) {
+      setSending(false);
+      setSubmitError('Terdapat isian yang melebihi batas panjang karakter. Mohon periksa kembali.');
+      return;
+    }
+    if (!validateWaNumber(telepon)) {
+      setSending(false);
+      setSubmitError('Nomor WhatsApp tidak valid. Pastikan hanya berisi angka dengan minimal 10 digit.');
+      return;
+    }
+
+    // Sanitasi nomor WA ke format internasional Indonesia (contoh: 08xx -> 628xx)
+    const teleponTersanitasi = sanitizeWaNumber(telepon);
+
     const { error } = await supabase.from('pesan_kontak').insert({
-      nama: form.nama,
-      email: form.email,
-      subjek: form.subjek,
-      pesan: form.pesan,
+      nama,
+      telepon: teleponTersanitasi,
+      subjek,
+      pesan,
+      status: 'baru',
     });
 
     setSending(false);
@@ -247,15 +275,18 @@ function Kontak() {
 
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
-                    Alamat Email <span className="text-red-500">*</span>
+                    Nomor WhatsApp <span className="text-red-500">*</span>
                   </label>
                   <input
-                    type="email"
+                    type="tel"
                     required
-                    value={form.email}
-                    onChange={(e) => setForm({ ...form, email: e.target.value })}
+                    inputMode="numeric"
+                    autoComplete="tel"
+                    placeholder="Contoh: 081234567890"
+                    pattern="[0-9+\-\s]+"
+                    value={form.telepon}
+                    onChange={(e) => setForm({ ...form, telepon: e.target.value })}
                     className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-sm font-medium focus:bg-white focus:border-blue-600 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-slate-400"
-                    placeholder="nama@email.com"
                   />
                 </div>
               </div>
