@@ -15,13 +15,30 @@ export type AdminTable =
   | 'layanan_publik'
   | 'pesan_kontak';
 
+export interface ListOptions {
+  page?: number;
+  perPage?: number;
+}
+
 export const adminService = {
-  // Ambil semua baris dari sebuah tabel, opsional urut & terbaru dulu
-  async list<T = any>(table: AdminTable, orderBy = 'created_at', ascending = false): Promise<T[]> {
-    const { data, error } = await supabase
-      .from(table)
-      .select('*')
-      .order(orderBy, { ascending });
+  // Ambil baris dari sebuah tabel, opsional urut & terbaru dulu.
+  // Jika `page`/`perPage` disediakan, query dibatasi (pagination),
+  // jika tidak, ambil seluruh baris (default lama).
+  async list<T = any>(
+    table: AdminTable,
+    orderBy = 'created_at',
+    ascending = false,
+    options: ListOptions = {}
+  ): Promise<T[]> {
+    let query = supabase.from(table).select('*').order(orderBy, { ascending });
+
+    if (options.page != null && options.perPage != null) {
+      const start = (options.page - 1) * options.perPage;
+      const end = start + options.perPage - 1;
+      query = query.range(start, end);
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       console.error(`Gagal mengambil data ${table}:`, error.message);

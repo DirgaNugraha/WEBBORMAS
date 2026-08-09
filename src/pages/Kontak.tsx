@@ -18,6 +18,7 @@ import PageHeader from '../components/ui/PageHeader';
 import { dataService } from '../services/dataService';
 import { supabase } from '../lib/supabaseClient';
 import { sanitizeWaNumber, validateWaNumber } from '../lib/format';
+import { pesanKontakInputSchema } from '../types/schemas';
 import type { KelurahanInfo } from '../types';
 
 interface ContactForm {
@@ -72,14 +73,32 @@ function Kontak() {
       return;
     }
 
-    // Sanitasi nomor WA ke format internasional Indonesia (contoh: 08xx -> 628xx)
+// Sanitasi nomor WA ke format internasional Indonesia (contoh: 08xx -> 628xx)
     const teleponTersanitasi = sanitizeWaNumber(telepon);
 
-    const { error } = await supabase.from('pesan_kontak').insert({
+    // Validasi tambahan dengan zod (schema) sebelum dikirim ke server
+    const parsed = pesanKontakInputSchema.safeParse({
       nama,
       telepon: teleponTersanitasi,
       subjek,
       pesan,
+    });
+
+    if (!parsed.success) {
+      setSending(false);
+      setSubmitError(
+        parsed.error.issues[0]?.message || 'Terdapat isian yang tidak valid.'
+      );
+      return;
+    }
+
+    const { data: payload } = parsed;
+
+    const { error } = await supabase.from('pesan_kontak').insert({
+      nama: payload.nama,
+      telepon: payload.telepon,
+      subjek: payload.subjek,
+      pesan: payload.pesan,
       status: 'baru',
     });
 
