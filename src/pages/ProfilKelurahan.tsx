@@ -1,22 +1,20 @@
 import { memo, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  Users,
-  Map,
   Target,
   Eye,
   Building2,
-  Landmark
+  Landmark,
+  Maximize2
 } from 'lucide-react';
 
 import PageHeader from '../components/ui/PageHeader';
 import SectionTitle from '../components/ui/SectionTitle';
 import { dataService } from '../services/dataService';
 import type { KelurahanInfo, Pejabat } from '../types';
+
+// Import Gambar Peta Administrasi dari Aset
+import petaBorimasunggu from '../aset/petabormas.jpg';
 
 // Sub-komponen Kartu Pejabat Institusional
 function PejabatCard({ pejabat, index }: { pejabat: Pejabat; index: number }) {
@@ -109,15 +107,6 @@ function ProfilKelurahan() {
     );
   }
 
-  const infoStats = [
-    { icon: MapPin, label: 'Alamat Kantor', value: kelurahanInfo.alamat, span: 'col-span-full lg:col-span-2' },
-    { icon: Clock, label: 'Jam Operasional Layanan', value: kelurahanInfo.jamLayanan, span: 'col-span-1' },
-    { icon: Users, label: 'Jumlah Penduduk', value: `${kelurahanInfo.jumlahPenduduk.toLocaleString('id-ID')} Jiwa`, span: 'col-span-1' },
-    { icon: Map, label: 'Luas Wilayah', value: kelurahanInfo.luasWilayah, span: 'col-span-1' },
-    { icon: Phone, label: 'Kontak', value: kelurahanInfo.telepon, span: 'col-span-1' },
-    { icon: Mail, label: 'Email', value: kelurahanInfo.email, span: 'col-span-1 lg:col-span-2' },
-  ];
-
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white pb-20">
       {/* Header Halaman Resmi */}
@@ -126,42 +115,6 @@ function ProfilKelurahan() {
         subtitle="Informasi kelembagaan, latar belakang sejarah, visi & misi, serta struktur aparatur pemerintahan kelurahan."
         icon={<Landmark className="w-8 h-8 text-blue-700" />}
       />
-
-      {/* Section 1: Ringkasan Informasi Cepat (Metrics Grid) */}
-      <section className="py-12 container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-4">
-          <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
-            Data Singkat
-          </span>
-          <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 mt-2">
-            Ringkasan Wilayah & Layanan
-          </h2>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {infoStats.map((item, idx) => (
-            <motion.div
-              key={item.label}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              className={`bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs hover:border-blue-300 hover:shadow-md transition-all flex items-start gap-4 ${item.span || ''}`}
-            >
-              <div className="p-3 rounded-xl bg-blue-50 text-blue-700 shrink-0 border border-blue-100">
-                <item.icon className="w-5 h-5" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
-                  {item.label}
-                </span>
-                <span className="block text-sm md:text-base font-bold text-slate-900 mt-1 leading-snug">
-                  {item.value}
-                </span>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
       {/* Section 2: Sejarah & Rekam Jejak Wilayah */}
       <section className="py-8 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -180,6 +133,49 @@ function ProfilKelurahan() {
               {kelurahanInfo.sejarah}
             </div>
           </div>
+        </div>
+      </section>
+
+            {/* Section Peta Administrasi Kelurahan (Langsung di Bawah Section 1) */}
+      <section className="py-6 container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 md:p-8 shadow-xs">
+          <div className="mb-6">
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
+              Geografis & Wilayah
+            </span>
+            <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 mt-2">
+              Peta Administrasi Kelurahan
+            </h2>
+            <p className="text-slate-500 text-sm mt-1">
+              Pemetaan batas wilayah administrasi dan lingkungan di Kelurahan Borimasunggu.
+            </p>
+          </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative group rounded-2xl overflow-hidden bg-slate-100 border border-slate-200"
+          >
+            <img
+              src={petaBorimasunggu}
+              alt="Peta Administrasi Kelurahan Borimasunggu"
+              className="w-full h-auto max-h-[650px] object-contain mx-auto group-hover:scale-105 transition-transform duration-500"
+            />
+
+            {/* Overlay Tombol Buka Gambar */}
+            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <a
+                href={petaBorimasunggu}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white text-slate-900 font-semibold text-sm shadow-lg hover:bg-blue-50 transition-colors"
+              >
+                <Maximize2 className="w-4 h-4 text-blue-700" />
+                <span>Lihat Ukuran Penuh</span>
+              </a>
+            </div>
+          </motion.div>
         </div>
       </section>
 
