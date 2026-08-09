@@ -142,23 +142,41 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
   );
 }
 
+const PER_PAGE = 9;
+
 function BeritaPage() {
   const [allBerita, setAllBerita] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [page, setPage] = useState(1);
   const [activeKategori, setActiveKategori] = useState('Semua');
   const [search, setSearch] = useState('');
 
   useEffect(() => {
     let isMounted = true;
-    dataService.getBeritaList().then((data) => {
+    dataService.getBeritaPage({ page: 1, perPage: PER_PAGE }).then((result) => {
       if (!isMounted) return;
-      setAllBerita(data);
+      setAllBerita(result.data);
+      setHasMore(result.hasMore);
+      setPage(1);
       setLoading(false);
     });
     return () => {
       isMounted = false;
     };
   }, []);
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    const result = await dataService.getBeritaPage({ page: nextPage, perPage: PER_PAGE });
+    setAllBerita((prev) => [...prev, ...result.data]);
+    setHasMore(result.hasMore);
+    setPage(nextPage);
+    setLoadingMore(false);
+  };
 
   const kategoriList = useMemo(
     () => ['Semua', ...Array.from(new Set(allBerita.map((b) => b.kategori)))],
@@ -234,21 +252,41 @@ function BeritaPage() {
               ))}
             </AnimatePresence>
           </motion.div>
-        ) : (
-          /* Empty State */
-          <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto">
-            <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4 text-blue-700">
-              <Inbox className="w-6 h-6" />
+          ) : (
+            /* Empty State */
+            <div className="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4 text-blue-700">
+                <Inbox className="w-6 h-6" />
+              </div>
+              <h3 className="font-extrabold text-slate-900 text-base">
+                Berita Tidak Ditemukan
+              </h3>
+              <p className="text-xs md:text-sm text-slate-500 mt-1">
+                Tidak ada publikasi artikel yang cocok dengan kata kunci atau filter kategori yang dipilih.
+              </p>
             </div>
-            <h3 className="font-extrabold text-slate-900 text-base">
-              Berita Tidak Ditemukan
-            </h3>
-            <p className="text-xs md:text-sm text-slate-500 mt-1">
-              Tidak ada publikasi artikel yang cocok dengan kata kunci atau filter kategori yang dipilih.
-            </p>
-          </div>
-        )}
-      </section>
+          )}
+
+          {/* Tombol Muat Lebih Banyak */}
+          {!loading && filtered.length > 0 && hasMore && (
+            <div className="mt-10 text-center">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+              >
+                {loadingMore ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Memuat...
+                  </>
+                ) : (
+                  'Muat Lebih Banyak'
+                )}
+              </button>
+            </div>
+          )}
+        </section>
     </div>
   );
 }

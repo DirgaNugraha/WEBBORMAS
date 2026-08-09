@@ -88,10 +88,15 @@ function GaleriCard({
   );
 }
 
+const PER_PAGE = 12;
+
 function Galeri() {
   const [allGaleri, setAllGaleri] = useState<GaleriItem[]>([]);
   const [kategoriList, setKategoriList] = useState<string[]>(['Semua']);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [page, setPage] = useState(1);
   const [activeKategori, setActiveKategori] = useState('Semua');
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
@@ -99,15 +104,28 @@ function Galeri() {
     async function loadData() {
       setLoading(true);
       const [galeri, kategori] = await Promise.all([
-        dataService.getGaleriList(),
+        dataService.getGaleriPage({ page: 1, perPage: PER_PAGE }),
         dataService.getGaleriKategori(),
       ]);
-      setAllGaleri(galeri);
+      setAllGaleri(galeri.data);
+      setHasMore(galeri.hasMore);
+      setPage(1);
       setKategoriList(kategori);
       setLoading(false);
     }
     loadData();
   }, []);
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    const result = await dataService.getGaleriPage({ page: nextPage, perPage: PER_PAGE });
+    setAllGaleri((prev) => [...prev, ...result.data]);
+    setHasMore(result.hasMore);
+    setPage(nextPage);
+    setLoadingMore(false);
+  };
 
   const filtered = useMemo(
     () =>
@@ -210,15 +228,35 @@ function Galeri() {
             <h3 className="font-extrabold text-slate-900  text-base">
               Dokumentasi Tidak Ditemukan
             </h3>
-            <p className="text-xs md:text-sm text-slate-500  mt-1">
-              Tidak ada foto atau gambar pada kategori{' '}
-              <span className="font-semibold text-slate-700 ">
-                "{activeKategori}"
-              </span>
-              .
-            </p>
-          </div>
-        )}
+              <p className="text-xs md:text-sm text-slate-500  mt-1">
+                Tidak ada foto atau gambar pada kategori{' '}
+                <span className="font-semibold text-slate-700 ">
+                  "{activeKategori}"
+                </span>
+                .
+              </p>
+            </div>
+          )}
+
+          {/* Tombol Muat Lebih Banyak */}
+          {!loading && filtered.length > 0 && hasMore && (
+            <div className="mt-10 text-center">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+              >
+                {loadingMore ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Memuat...
+                  </>
+                ) : (
+                  'Muat Lebih Banyak'
+                )}
+              </button>
+            </div>
+          )}
       </section>
 
       {/* Lightbox Modal Navigation */}

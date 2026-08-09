@@ -18,17 +18,20 @@ export const dataService = {
 
   // Berita
   getBeritaList: beritaService.getBeritaList.bind(beritaService),
+  getBeritaPage: beritaService.getBeritaPage.bind(beritaService),
   getBeritaById: beritaService.getBeritaById.bind(beritaService),
   getBeritaBySlug: beritaService.getBeritaBySlug.bind(beritaService),
   getRecentBerita: beritaService.getRecentBerita.bind(beritaService),
 
   // Agenda
   getAgendaList: agendaService.getAgendaList.bind(agendaService),
+  getAgendaPage: agendaService.getAgendaPage.bind(agendaService),
   getUpcomingAgenda: agendaService.getUpcomingAgenda.bind(agendaService),
   getRecentAgenda: agendaService.getRecentAgenda.bind(agendaService),
 
   // Galeri
   getGaleriList: galeriService.getGaleriList.bind(galeriService),
+  getGaleriPage: galeriService.getGaleriPage.bind(galeriService),
   getGaleriKategori: galeriService.getGaleriKategori.bind(galeriService),
   getRecentGaleri: galeriService.getRecentGaleri.bind(galeriService),
 

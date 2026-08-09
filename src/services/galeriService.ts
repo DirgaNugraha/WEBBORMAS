@@ -2,18 +2,60 @@ import { supabase } from '../lib/supabaseClient';
 import { handleServiceError } from './errorHandler';
 import type { GaleriItem } from '../types';
 
+export interface GaleriListParams {
+  page?: number;
+  perPage?: number;
+}
+
+export interface GaleriPageResult {
+  data: GaleriItem[];
+  total: number;
+  hasMore: boolean;
+}
+
 export const galeriService = {
-  async getGaleriList(): Promise<GaleriItem[]> {
+  async getGaleriList(params: GaleriListParams = {}): Promise<GaleriItem[]> {
+    const { page = 1, perPage = 12 } = params;
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+
     const { data, error } = await supabase
       .from('galeri')
       .select('*')
-      .order('tanggal', { ascending: false });
+      .order('tanggal', { ascending: false })
+      .range(from, to);
 
     if (error) {
       handleServiceError('getGaleriList', error);
       return [];
     }
     return data as GaleriItem[];
+  },
+
+  // Ambil satu halaman galeri beserta totalnya (untuk load-more).
+  async getGaleriPage(params: GaleriListParams = {}): Promise<GaleriPageResult> {
+    const { page = 1, perPage = 12 } = params;
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+
+    const { data, count, error } = await supabase
+      .from('galeri')
+      .select('*', { count: 'exact' })
+      .order('tanggal', { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      handleServiceError('getGaleriPage', error);
+      return { data: [], total: 0, hasMore: false };
+    }
+
+    const mapped = (data as GaleriItem[]) ?? [];
+    const total = count ?? mapped.length;
+    return {
+      data: mapped,
+      total,
+      hasMore: page * perPage < total,
+    };
   },
 
 // Optimasi: hanya memilih kolom 'kategori' (lebih ringan daripada '*').

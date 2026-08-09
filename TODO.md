@@ -39,8 +39,24 @@ Status: **SELESAI** ✅ — Typecheck bersih (npx tsc --noEmit -p tsconfig.app.j
 - [x] Terapkan `pesanKontakInputSchema` di form publik `Kontak.tsx` (validasi sebelum insert)
 - [x] Jalankan build/typecheck (bersih)
 
+## Langkah 1 (baru): Pagination + "Load More" di halaman publik ✅
+- [x] `beritaService`: tambah `getBeritaPage` + pagination via `.range()`
+- [x] `galeriService`: tambah `getGaleriPage` + pagination via `.range()`
+- [x] `agendaService`: tambah `getAgendaPage` + pagination via `.range()`
+- [x] Ekspos `getBeritaPage`/`getGaleriPage`/`getAgendaPage` di `dataService`
+- [x] `BeritaPage.tsx`: ganti ke `getBeritaPage` + tombol "Muat Lebih Banyak"
+- [x] `Galeri.tsx`: ganti ke `getGaleriPage` + tombol "Muat Lebih Banyak"
+- [x] `Agenda.tsx`: ganti ke `getAgendaPage` + tombol "Muat Lebih Banyak"
+- [x] Jalankan typecheck (bersih)
+
+## Langkah 2: Index database (Supabase) - BELUM
+- [ ] Siapkan skrip SQL untuk index di Supabase (tanggal, status, slug)
+
+## Langkah 3: Caching data publik (TanStack Query) - BELUM
+- [ ] Integrasikan TanStack Query untuk caching data publik
+
 ## Catatan
-- Halaman publik tetap menampilkan semua data (tanpa pagination UI) sesuai permintaan.
-- Pagination diterapkan di sisi query/admin (`Adminservice.list()`).
-- `dataService.ts` dipertahankan sebagai barrel re-export agar impor halaman publik tidak berubah.
+- Halaman publik kini memuat data bertahap dengan tombol "Muat Lebih Banyak" (Load More) agar tidak menarik seluruh tabel sekaligus saat data banyak.
+- Pagination diterapkan di sisi query (`dataService` + `Adminservice.list()`) via `.range()`.
+- `dataService.ts` dipertahankan sebagai barrel re-export agar impor halaman publik tetap konsisten.
 - Zod diterapkan secara aman (validasi input form) tanpa mengubah bentuk data eksisting.

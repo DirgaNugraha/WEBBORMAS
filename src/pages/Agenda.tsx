@@ -79,10 +79,15 @@ function EmptyState() {
   );
 }
 
+const PER_PAGE = 10;
+
 function Agenda() {
   const [filter, setFilter] = useState<AgendaFilter>('all');
   const [allAgenda, setAllAgenda] = useState<AgendaType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [page, setPage] = useState(1);
 
   // State untuk Modal Detail Agenda
   const [selectedAgenda, setSelectedAgenda] = useState<AgendaType | null>(null);
@@ -90,9 +95,11 @@ function Agenda() {
   useEffect(() => {
     let mounted = true;
 
-    dataService.getAgendaList().then((data) => {
+    dataService.getAgendaPage({ page: 1, perPage: PER_PAGE }).then((result) => {
       if (!mounted) return;
-      setAllAgenda(data);
+      setAllAgenda(result.data);
+      setHasMore(result.hasMore);
+      setPage(1);
       setLoading(false);
     });
 
@@ -100,6 +107,17 @@ function Agenda() {
       mounted = false;
     };
   }, []);
+
+  const loadMore = async () => {
+    if (loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    const result = await dataService.getAgendaPage({ page: nextPage, perPage: PER_PAGE });
+    setAllAgenda((prev) => [...prev, ...result.data]);
+    setHasMore(result.hasMore);
+    setPage(nextPage);
+    setLoadingMore(false);
+  };
 
   const filtered = useMemo(
     () => allAgenda.filter((a) => filter === 'all' || a.status === filter),
@@ -248,7 +266,27 @@ function Agenda() {
                     </motion.article>
                   );
                 })}
-              </div>
+</div>
+            </div>
+          )}
+
+          {/* Tombol Muat Lebih Banyak */}
+          {!loading && filtered.length > 0 && hasMore && (
+            <div className="mt-10 text-center">
+              <button
+                onClick={loadMore}
+                disabled={loadingMore}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-700 hover:bg-blue-800 disabled:opacity-50 text-white font-bold text-sm shadow-xs transition-colors cursor-pointer"
+              >
+                {loadingMore ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Memuat...
+                  </>
+                ) : (
+                  'Muat Lebih Banyak'
+                )}
+              </button>
             </div>
           )}
         </div>

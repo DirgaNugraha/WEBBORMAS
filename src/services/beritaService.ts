@@ -26,13 +26,40 @@ export interface BeritaListParams {
   limit?: number;
 }
 
+export interface BeritaPageResult {
+  data: Berita[];
+  total: number;
+  hasMore: boolean;
+}
+
 export const beritaService = {
   async getBeritaList(params: BeritaListParams = {}): Promise<Berita[]> {
+    const { page = 1, perPage = 12, limit } = params;
+
+    // Jika `limit` diberikan, gunakan limit sederhana (untuk sidebar/beranda).
+    if (limit) {
+      const { data, error } = await supabase
+        .from('berita')
+        .select('*')
+        .order('tanggal', { ascending: false })
+        .limit(limit);
+
+      if (error) {
+        handleServiceError('getBeritaList', error);
+        return [];
+      }
+      return (data || []).map(formatBeritaItem);
+    }
+
+    // Pagination default (load-more): pakai .range() agar efisien di data besar.
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+
     const { data, error } = await supabase
       .from('berita')
       .select('*')
       .order('tanggal', { ascending: false })
-      .limit(params.limit ?? params.perPage ?? 100);
+      .range(from, to);
 
     if (error) {
       handleServiceError('getBeritaList', error);
@@ -40,6 +67,33 @@ export const beritaService = {
     }
 
     return (data || []).map(formatBeritaItem);
+  },
+
+  // Ambil satu halaman berita beserta totalnya (untuk load-more).
+  async getBeritaPage(params: BeritaListParams = {}): Promise<BeritaPageResult> {
+    const { page = 1, perPage = 12 } = params;
+    const from = (page - 1) * perPage;
+    const to = from + perPage - 1;
+
+    // Pakai count: 'exact' agar tahu total & apakah masih ada data berikutnya.
+    const { data, count, error } = await supabase
+      .from('berita')
+      .select('*', { count: 'exact' })
+      .order('tanggal', { ascending: false })
+      .range(from, to);
+
+    if (error) {
+      handleServiceError('getBeritaPage', error);
+      return { data: [], total: 0, hasMore: false };
+    }
+
+    const mapped = (data || []).map(formatBeritaItem);
+    const total = count ?? mapped.length;
+    return {
+      data: mapped,
+      total,
+      hasMore: page * perPage < total,
+    };
   },
 
   async getBeritaById(id: string): Promise<Berita | undefined> {
