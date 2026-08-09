@@ -10,9 +10,6 @@ import {
   Target,
   Eye,
   Building2,
-  Award,
-  ShieldCheck,
-  UserCheck,
   Landmark
 } from 'lucide-react';
 
