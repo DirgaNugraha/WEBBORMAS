@@ -13,7 +13,7 @@ import Agenda from './pages/Agenda';
 import Galeri from './pages/Galeri';
 import LayananPublik from './pages/LayananPublik';
 import Kontak from './pages/Kontak';
-import BeritaDetail from './pages/Beritadetail.tsx'
+import BeritaDetail from './pages/Beritadetail';
 import NotFound from './pages/NotFound';
 
 // Admin
@@ -32,7 +32,6 @@ import PotensiAdmin from './pages/admin/Potensiadmin';
 import LayananAdmin from './pages/admin/Layananadmin';
 import PesanKontakAdmin from './pages/admin/PesanKontakAdmin';
 
-
 // Scroll ke atas setiap kali pindah halaman
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -43,7 +42,7 @@ function ScrollToTop() {
 // Layout untuk halaman publik (dengan Navbar + Footer)
 function PublicLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-white ">
+    <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
       <main className="flex-1">
         <Routes>
@@ -52,7 +51,6 @@ function PublicLayout() {
           <Route path="/potensi" element={<PotensiKelurahan />} />
           <Route path="/berita" element={<BeritaPage />} />
           <Route path="/berita/:slug" element={<BeritaDetail />} />
-          <Route path="/berita" element={<BeritaPage />} />
           <Route path="/agenda" element={<Agenda />} />
           <Route path="/galeri" element={<Galeri />} />
           <Route path="/layanan" element={<LayananPublik />} />
@@ -67,64 +65,64 @@ function PublicLayout() {
 
 function App() {
   return (
-      <AuthProvider>
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            {/* Login admin — tanpa AdminLayout/sidebar */}
-            <Route path="/admin" element={<Login />} />
+    <AuthProvider>
+      <BrowserRouter>
+        <ScrollToTop />
+        <Routes>
+          {/* Login admin — tanpa AdminLayout/sidebar */}
+          <Route path="/admin" element={<Login />} />
 
-            {/* Halaman admin — dilindungi ProtectedRoute + pakai AdminLayout */}
-            <Route
-              path="/admin/dashboard"
-              element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/profil"
-              element={<ProtectedRoute><AdminLayout><ProfilAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/pejabat"
-              element={<ProtectedRoute><AdminLayout><PejabatAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/statistik"
-              element={<ProtectedRoute><AdminLayout><StatistikAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/program"
-              element={<ProtectedRoute><AdminLayout><ProgramAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/berita"
-              element={<ProtectedRoute><AdminLayout><BeritaAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/agenda"
-              element={<ProtectedRoute><AdminLayout><AgendaAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/galeri"
-              element={<ProtectedRoute><AdminLayout><GaleriAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/potensi"
-              element={<ProtectedRoute><AdminLayout><PotensiAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/layanan"
-              element={<ProtectedRoute><AdminLayout><LayananAdmin /></AdminLayout></ProtectedRoute>}
-            />
-            <Route
-              path="/admin/pesan-kontak"
-              element={<ProtectedRoute><AdminLayout><PesanKontakAdmin /></AdminLayout></ProtectedRoute>}
-            />
+          {/* Halaman admin — dilindungi ProtectedRoute + pakai AdminLayout */}
+          <Route
+            path="/admin/dashboard"
+            element={<ProtectedRoute><AdminLayout><Dashboard /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/profil"
+            element={<ProtectedRoute><AdminLayout><ProfilAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/pejabat"
+            element={<ProtectedRoute><AdminLayout><PejabatAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/statistik"
+            element={<ProtectedRoute><AdminLayout><StatistikAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/program"
+            element={<ProtectedRoute><AdminLayout><ProgramAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/berita"
+            element={<ProtectedRoute><AdminLayout><BeritaAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/agenda"
+            element={<ProtectedRoute><AdminLayout><AgendaAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/galeri"
+            element={<ProtectedRoute><AdminLayout><GaleriAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/potensi"
+            element={<ProtectedRoute><AdminLayout><PotensiAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/layanan"
+            element={<ProtectedRoute><AdminLayout><LayananAdmin /></AdminLayout></ProtectedRoute>}
+          />
+          <Route
+            path="/admin/pesan-kontak"
+            element={<ProtectedRoute><AdminLayout><PesanKontakAdmin /></AdminLayout></ProtectedRoute>}
+          />
 
-            {/* Semua route selain /admin/* masuk ke layout publik */}
-            <Route path="/*" element={<PublicLayout />} />
-          </Routes>
-</BrowserRouter>
-      </AuthProvider>
+          {/* Semua route selain /admin/* masuk ke layout publik */}
+          <Route path="/*" element={<PublicLayout />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

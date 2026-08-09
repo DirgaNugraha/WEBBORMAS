@@ -329,19 +329,13 @@ function Beranda() {
               </div>
 
               <div className="grid gap-6">
-                {latestBerita.map((berita, i) => (
-                  <motion.article
-                    key={berita.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.08 }}
-                  >
-                    {/* 🟢 PERBAIKAN: Routing mutlak menggunakan slug */}
-                    <Link
-                      to={`/berita/${berita.slug}`}
-                      className="group bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all duration-300"
-                    >
+                {latestBerita.map((berita, i) => {
+                  const isEksternal = Boolean(berita.isEksternal && berita.linkAsli);
+                  const cardClassName =
+                    "group bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col sm:flex-row hover:shadow-md transition-all duration-300";
+
+                  const cardInner = (
+                    <>
                       <div className="sm:w-52 h-48 sm:h-auto shrink-0 overflow-hidden relative">
                         <img
                           src={berita.gambar}
@@ -367,16 +361,56 @@ function Beranda() {
                           </p>
                         </div>
 
+                        {/* 🟢 BAGIAN FOOTER CARD BERITA DIUBAH DI SINI */}
                         <div className="pt-4 mt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                          <span>Penulis: <strong className="text-slate-700">{berita.penulis}</strong></span>
+                          <span>
+                            {isEksternal ? (
+                              <>
+                                Sumber: <strong className="text-slate-700">{berita.namaSumber || 'Sumber Luar'}</strong>
+                              </>
+                            ) : (
+                              <>
+                                Penulis: <strong className="text-slate-700">{berita.penulis || 'Admin Kelurahan'}</strong>
+                              </>
+                            )}
+                          </span>
+
                           <span className="text-blue-700 font-semibold group-hover:underline flex items-center gap-1">
-                            Selengkapnya <ArrowRight className="w-3 h-3" />
+                            {isEksternal ? 'Baca Artikel Asli' : 'Selengkapnya'} <ArrowRight className="w-3 h-3" />
                           </span>
                         </div>
                       </div>
-                    </Link>
-                  </motion.article>
-                ))}
+                    </>
+                  );
+
+                  return (
+                    <motion.article
+                      key={berita.id}
+                      initial={{ opacity: 0, y: 15 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08 }}
+                    >
+                      {isEksternal ? (
+                        <a
+                          href={berita.linkAsli}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cardClassName}
+                        >
+                          {cardInner}
+                        </a>
+                      ) : (
+                        <Link
+                          to={`/berita/${berita.slug}`}
+                          className={cardClassName}
+                        >
+                          {cardInner}
+                        </Link>
+                      )}
+                    </motion.article>
+                  );
+                })}
               </div>
             </div>
 

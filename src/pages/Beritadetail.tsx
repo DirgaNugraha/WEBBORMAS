@@ -228,32 +228,52 @@ function BeritaDetail() {
                   Berita Lainnya
                 </h2>
                 <div className="space-y-4">
-                  {beritaLainnya.map((b) => (
-                    // 🟢 PERBAIKAN: Routing mutlak menggunakan slug
-                    <Link
-                      key={b.id}
-                      to={`/berita/${b.slug}`}
-                      className="flex gap-3.5 p-2 rounded-xl hover:bg-slate-50  transition-colors group"
-                    >
-                      {b.gambar ? (
-                        <img
-                          src={b.gambar}
-                          alt={b.judul}
-                          className="w-20 h-20 rounded-lg object-cover shrink-0 border border-slate-100 "
-                        />
-                      ) : (
-                        <div className="w-20 h-20 rounded-lg bg-slate-100  shrink-0 flex items-center justify-center text-xs text-slate-400">
-                          No Image
+                  {beritaLainnya.map((b) => {
+                    const isEksternal = Boolean(b.isEksternal && b.linkAsli);
+                    const itemClassName = "flex gap-3.5 p-2 rounded-xl hover:bg-slate-50 transition-colors group";
+
+                    const itemContent = (
+                      <>
+                        {b.gambar ? (
+                          <img
+                            src={b.gambar}
+                            alt={b.judul}
+                            className="w-20 h-20 rounded-lg object-cover shrink-0 border border-slate-100"
+                          />
+                        ) : (
+                          <div className="w-20 h-20 rounded-lg bg-slate-100 shrink-0 flex items-center justify-center text-xs text-slate-400">
+                            No Image
+                          </div>
+                        )}
+                        <div className="min-w-0 flex flex-col justify-center">
+                          <h3 className="text-sm font-semibold text-slate-900 line-clamp-2 group-hover:text-primary-600 transition-colors">
+                            {b.judul}
+                          </h3>
+                          <p className="text-xs text-slate-400 mt-1">{formatDate(b.tanggal)}</p>
                         </div>
-                      )}
-                      <div className="min-w-0 flex flex-col justify-center">
-                        <h3 className="text-sm font-semibold text-slate-900  line-clamp-2 group-hover:text-primary-600  transition-colors">
-                          {b.judul}
-                        </h3>
-                        <p className="text-xs text-slate-400 mt-1">{formatDate(b.tanggal)}</p>
-                      </div>
-                    </Link>
-                  ))}
+                      </>
+                    );
+
+                    return isEksternal ? (
+                      <a
+                        key={b.id}
+                        href={b.linkAsli}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={itemClassName}
+                      >
+                        {itemContent}
+                      </a>
+                    ) : (
+                      <Link
+                        key={b.id}
+                        to={`/berita/${b.slug}`}
+                        className={itemClassName}
+                      >
+                        {itemContent}
+                      </Link>
+                    );
+                  })}
                   {beritaLainnya.length === 0 && (
                     <p className="text-sm text-slate-400">Belum ada berita lainnya.</p>
                   )}
