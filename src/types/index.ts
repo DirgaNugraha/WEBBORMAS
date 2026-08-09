@@ -40,7 +40,6 @@ export interface Potensi {
   kategori: string;
   deskripsi: string;
   gambar: string;
-  icon: string;
 }
 
 export interface Berita {

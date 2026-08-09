@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import kantorlurah from '../aset/kantor kelurahan.webp';
@@ -8,94 +8,62 @@ import {
   CalendarDays,
   ChevronRight,
   MessageSquare,
+  ChevronDown,
   Image as ImageIcon,
-  Send,
+Send,
   ShieldCheck,
   Zap,
   Building2,
   MapPin,
   ExternalLink,
-  CheckCircle2,
-  Clock,
+Clock,
   FileText,
+  Sprout,
+  Info,
 } from 'lucide-react';
 import { dataService } from '../services/dataService';
-import { getIcon } from '../lib/icons';
 import { formatDateShort, formatDate } from '../lib/format';
 import Modal from '../components/Modal';
 
 import type {
   KelurahanInfo,
-  StatItem,
   Agenda,
   Berita,
   GaleriItem,
+  Potensi,
 } from '../types';
-
-const statOrderPriority = ['penduduk', 'wilayah', 'tetangga', 'warga'];
-
-function getStatPriority(label: string) {
-  const lower = label.toLowerCase();
-  const idx = statOrderPriority.findIndex((keyword) => lower.includes(keyword));
-  return idx === -1 ? statOrderPriority.length : idx;
-}
 
 function Beranda() {
   const [kelurahanInfo, setKelurahanInfo] = useState<KelurahanInfo | null>(null);
-  const [statsData, setStatsData] = useState<StatItem[]>([]);
   const [recentGaleri, setRecentGaleri] = useState<GaleriItem[]>([]);
   const [upcomingAgenda, setUpcomingAgenda] = useState<Agenda[]>([]);
   const [latestBerita, setLatestBerita] = useState<Berita[]>([]);
+  const [potensiList, setPotensiList] = useState<Potensi[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // State untuk menyimpan Agenda yang sedang dipilih & Modal Detail
-  const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
+// State untuk menyimpan Agenda yang sedang dipilih & Modal Detail
+const [selectedAgenda, setSelectedAgenda] = useState<Agenda | null>(null);
+  const [selectedPotensi, setSelectedPotensi] = useState<Potensi | null>(null);
 
-useEffect(() => {
+  useEffect(() => {
     async function loadData() {
       setLoading(true);
-      const [info, stats, galeri, agenda, berita] = await Promise.all([
+      const [info, galeri, agenda, berita, potensi] = await Promise.all([
         dataService.getKelurahanInfo(),
-        dataService.getStatsData(),
         dataService.getRecentGaleri(4),
         dataService.getRecentAgenda(3),
         dataService.getRecentBerita(3),
+        dataService.getPotensiList(),
       ]);
       setKelurahanInfo(info);
-      setStatsData(stats);
       setRecentGaleri(galeri);
       setUpcomingAgenda(agenda);
       setLatestBerita(berita);
+      setPotensiList(potensi.slice(0, 4));
       setLoading(false);
     }
     loadData();
   }, []);
-
-  const mergedStats = useMemo(() => {
-    if (!kelurahanInfo) return statsData;
-
-    const merged = statsData.map((stat) => {
-      const label = stat.label.toLowerCase();
-
-      if (label.includes('penduduk')) {
-        return {
-          ...stat,
-          value: kelurahanInfo.jumlahPenduduk.toLocaleString('id-ID'),
-        };
-      }
-
-      if (label.includes('wilayah')) {
-        return {
-          ...stat,
-          value: kelurahanInfo.luasWilayah,
-        };
-      }
-
-      return stat;
-    });
-
-    return [...merged].sort((a, b) => getStatPriority(a.label) - getStatPriority(b.label));
-  }, [statsData, kelurahanInfo]);
 
   const handleCloseModal = useCallback(() => {
     setSelectedAgenda(null);
@@ -112,121 +80,79 @@ useEffect(() => {
 
   return (
     <div className="bg-slate-50 min-h-screen text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
-      {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-28 pb-20 border-b border-slate-200">
-        <div className="absolute inset-0 z-0">
-          <img
-            src={kantorlurah}
-            alt="Kantor Kelurahan Borimasunggu"
-            className="w-full h-full object-cover object-center scale-105 filter brightness-90"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/90 via-slate-900/80 to-slate-950/60" />
-          <div className="absolute inset-0 bg-[radial-gradient(#rgba(255,255,255,0.1)_1px,transparent_1px)] [background-size:24px_24px] opacity-20" />
-        </div>
+{/* Hero Section */}
+<section className="relative h-screen w-full flex flex-col justify-between items-center overflow-hidden border-b border-slate-200/20">
+  {/* Background & Overlay */}
+  <div className="absolute inset-0 z-0">
+    <img
+      src={kantorlurah}
+      alt="Kantor Kelurahan Borimasunggu"
+      className="w-full h-full object-cover object-center filter brightness-[0.6]"
+    />
+    {/* Dark Gradient Overlay */}
+    <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/60 to-slate-950/90" />
+    <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:24px_24px] opacity-25" />
+  </div>
 
-        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="max-w-3xl space-y-6"
-          >
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-blue-500/10 border border-blue-400/30 backdrop-blur-md text-blue-200 text-xs md:text-sm font-semibold tracking-wide">
-              <Building2 className="w-4 h-4 text-blue-400" />
-              <span>Portal Resmi Pemerintah Kelurahan</span>
-            </div>
+  {/* Top Spacer untuk menyeimbangkan layout vertikal */}
+  <div className="w-full h-24 sm:h-28" />
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white tracking-tight leading-[1.1]">
-              Kelurahan <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-blue-100 to-sky-300">
-                Borimasunggu
-              </span>
-            </h1>
+  {/* Main Content */}
+  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="max-w-5xl mx-auto text-center flex flex-col items-center space-y-6"
+    >
+      {/* Title - Pas & Proporsional dalam 1 Baris */}
+      <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold text-white tracking-tight leading-none drop-shadow-md">
+        Kelurahan{" "}
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-100 to-blue-400">
+          Borimasunggu
+        </span>
+      </h1>
 
-            <p className="text-base sm:text-lg md:text-xl text-slate-200 font-normal leading-relaxed max-w-2xl">
-              Pusat transparansi informasi, tata kelola pemerintahan, dan integrasi layanan publik terpadu untuk kesejahteraan warga.
-            </p>
+      {/* Description */}
+      <p className="text-base sm:text-xl text-slate-300 font-normal leading-relaxed max-w-2xl mx-auto drop-shadow-sm">
+        Pusat transparansi informasi, tata kelola pemerintahan, dan integrasi layanan publik terpadu.
+      </p>
 
-            <div className="flex flex-wrap items-center gap-3.5 pt-4">
-              <Link
-                to="/layanan"
-                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-blue-600/30"
-              >
-                <span>Layanan Publik</span>
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+      {/* Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 w-full sm:w-auto pt-2">
+        <Link
+          to="/layanan"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-500 active:scale-95 text-white font-semibold text-sm transition-all duration-200 shadow-lg shadow-blue-600/30"
+        >
+          <span>Layanan Publik</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
 
-              <Link
-                to="/kontak"
-                className="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-sm backdrop-blur-md border border-white/20 transition-all duration-200"
-              >
-                <MessageSquare className="w-4 h-4 text-blue-300" />
-                <span>Pengaduan Warga</span>
-              </Link>
-            </div>
+        <Link
+          to="/kontak"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-semibold text-sm backdrop-blur-md border border-white/15 transition-all duration-200"
+        >
+          <MessageSquare className="w-4 h-4 text-blue-300" />
+          <span>Pengaduan Warga</span>
+        </Link>
+      </div>
+    </motion.div>
+  </div>
 
-            <div className="pt-6 flex flex-wrap items-center gap-6 text-xs text-slate-300 border-t border-white/10">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Layanan Cepat & Transparan</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                <span>Integrasi Data Kependudukan</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* Section Statistik / Infografis Data */}
-      <section className="py-16 bg-white border-b border-slate-200">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 pb-4 border-b border-slate-100 gap-4">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
-                Satu Data Borimasunggu
-              </span>
-              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2">
-                Wilayah & Kependudukan dalam Angka
-              </h2>
-            </div>
-            <p className="text-xs md:text-sm text-slate-500 max-w-md">
-              Data statistik kependudukan dan administratif wilayah Kelurahan Borimasunggu secara real-time dan terverifikasi.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {mergedStats.map((stat, i) => {
-              const Icon = getIcon(stat.icon);
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
-                  className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 hover:shadow-md transition-all duration-300 flex flex-col justify-between group"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="text-xs font-semibold text-slate-500 group-hover:text-blue-700 transition-colors">
-                      {stat.label}
-                    </span>
-                    <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-blue-700 shadow-xs group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                      <Icon className="w-5 h-5" />
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-                      {stat.value}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+  {/* Scroll Indicator - Minimalis & Smooth */}
+  <div 
+    className="relative z-10 pb-6 flex flex-col items-center gap-1 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+    onClick={() => window.scrollTo({ top: window.innerHeight, behavior: "smooth" })}
+  >
+    <span className="text-[10px] tracking-widest uppercase font-medium text-slate-400">Scroll</span>
+    <motion.div
+      animate={{ y: [0, 5, 0] }}
+      transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <ChevronDown className="w-4 h-4 text-blue-300" />
+    </motion.div>
+  </div>
+</section>
 
       {/* Section Profil Singkat & Peta */}
       <section className="py-16 bg-slate-50/50 border-b border-slate-200">
@@ -305,6 +231,86 @@ useEffect(() => {
         </div>
       </section>
 
+{/* Section Potensi & Keunggulan Wilayah */}
+      <section className="py-16 bg-white border-b border-slate-200">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 pb-3 border-b border-slate-200 gap-3">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-3 py-1 rounded-md border border-blue-100">
+                Sektor Keunggulan
+              </span>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-2 flex items-center gap-2">
+                <Sprout className="w-6 h-6 text-blue-700" />
+                Potensi & Keunggulan Wilayah
+              </h2>
+            </div>
+            <Link
+              to="/potensi"
+              className="text-xs md:text-sm font-semibold text-blue-700 hover:text-blue-800 flex items-center gap-1 self-start sm:self-auto"
+            >
+              <span>Lihat Semua Potensi</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {potensiList.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
+{potensiList.map((potensiObj, i) => {
+                const hasPhoto = potensiObj.gambar && potensiObj.gambar.trim() !== '';
+                return (
+<motion.div
+                    key={potensiObj.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.08 }}
+                    onClick={() => setSelectedPotensi(potensiObj)}
+                    className="group bg-slate-50 hover:bg-white border border-slate-200 rounded-2xl overflow-hidden hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
+                  >
+                    <div className="relative h-40 w-full bg-slate-200 overflow-hidden">
+{hasPhoto ? (
+                        <img
+                          src={potensiObj.gambar}
+                          alt={potensiObj.nama}
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+                          <Sprout className="w-10 h-10" />
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
+                      <div className="absolute bottom-3 right-3">
+                        <span className="px-3 py-1 rounded-md bg-blue-700/90 backdrop-blur-md text-white text-[11px] font-extrabold uppercase tracking-wider">
+                          {potensiObj.kategori}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-5 flex-1 flex flex-col justify-between">
+                      <div>
+                        <h3 className="font-extrabold text-slate-900 text-base group-hover:text-blue-700 transition-colors line-clamp-1">
+                          {potensiObj.nama}
+                        </h3>
+                        <p className="text-xs md:text-sm text-slate-600 leading-relaxed mt-2 line-clamp-3">
+                          {potensiObj.deskripsi}
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-10 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
+              <Sprout className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-xs font-bold text-slate-600">Belum ada data potensi</p>
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Section Berita & Agenda */}
       <section className="py-16 bg-white border-b border-slate-200">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -336,10 +342,11 @@ useEffect(() => {
 
                   const cardInner = (
                     <>
-                      <div className="sm:w-52 h-48 sm:h-auto shrink-0 overflow-hidden relative">
+<div className="sm:w-52 h-48 sm:h-auto shrink-0 overflow-hidden relative">
                         <img
                           src={berita.gambar}
                           alt={berita.judul}
+                          loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
@@ -512,9 +519,10 @@ useEffect(() => {
                 transition={{ delay: i * 0.08 }}
                 className="group relative rounded-2xl overflow-hidden aspect-[4/3] bg-slate-200 border border-slate-200 shadow-xs hover:shadow-md transition-all cursor-pointer"
               >
-                <img
+<img
                   src={item.gambar}
                   alt={item.judul}
+                  loading="lazy"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
@@ -658,6 +666,61 @@ useEffect(() => {
             <div className="pt-4 border-t border-slate-100 flex justify-end">
               <button
                 onClick={handleCloseModal}
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+)}
+      </Modal>
+
+{/* Modal Detail Potensi */}
+      <Modal
+        isOpen={!!selectedPotensi}
+        onClose={() => setSelectedPotensi(null)}
+        maxWidth="max-w-2xl"
+      >
+        {selectedPotensi && (
+          <div className="p-6 md:p-8 space-y-6">
+            {/* Header Modal Potensi */}
+            <div className="space-y-3 pr-8">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-extrabold uppercase tracking-wider border border-blue-200">
+                  {selectedPotensi.kategori}
+                </span>
+              </div>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">
+                {selectedPotensi.nama}
+              </h3>
+            </div>
+
+            {/* Gambar Potensi */}
+            {selectedPotensi.gambar && selectedPotensi.gambar.trim() !== '' && (
+              <div className="rounded-2xl overflow-hidden border border-slate-200 aspect-[16/9] bg-slate-100">
+                <img
+                  src={selectedPotensi.gambar}
+                  alt={selectedPotensi.nama}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
+            {/* Deskripsi Potensi */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <Info className="w-4 h-4 text-blue-700" />
+                <span>Tentang Potensi</span>
+              </div>
+              <div className="text-slate-600 text-sm leading-relaxed whitespace-pre-line bg-white rounded-xl p-1">
+                {selectedPotensi.deskripsi || 'Tidak ada deskripsi untuk potensi ini.'}
+              </div>
+            </div>
+
+            {/* Footer Modal Action */}
+            <div className="pt-4 border-t border-slate-100 flex justify-end">
+              <button
+                onClick={() => setSelectedPotensi(null)}
                 className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors"
               >
                 Tutup

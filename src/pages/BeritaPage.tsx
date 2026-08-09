@@ -55,9 +55,10 @@ function BeritaCard({ berita, index }: { berita: Berita; index: number }) {
       {/* Visual Media Container */}
       <div className="relative h-52 w-full bg-slate-100 overflow-hidden shrink-0 flex items-center justify-center">
         {hasPhoto ? (
-          <img
+<img
             src={berita.gambar}
             alt={berita.judul}
+            loading="lazy"
             onError={() => setImgError(true)}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />

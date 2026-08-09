@@ -5,7 +5,7 @@ import {
   Newspaper, CalendarDays, Images, Mail, ArrowRight, 
   MessageSquare, Phone, Clock, Inbox, Loader2 
 } from 'lucide-react';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { supabase } from '../../lib/supabaseClient';
 import { formatDate } from '../../lib/format';
 

@@ -1,6 +1,7 @@
 import { Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/ui/Toast';
 
 // Layout & halaman publik
 import Navbar from './layouts/Navbar';
@@ -45,27 +46,29 @@ function PublicLayout() {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <ScrollToTop />
-        <Routes>
-          {/* Login admin — tanpa AdminLayout/sidebar */}
-          <Route path="/admin/login" element={<Login />} />
-          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+      <ToastProvider>
+        <BrowserRouter>
+          <ScrollToTop />
+          <Routes>
+            {/* Login admin — tanpa AdminLayout/sidebar */}
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
 
-          {/* Halaman admin — dilindungi ProtectedRoute + pakai AdminLayout */}
-          <Route
-            path="/admin/*"
-            element={
-              <Suspense fallback={<PageLoader />}>
-                <AdminRoutes />
-              </Suspense>
-            }
-          />
+            {/* Halaman admin — dilindungi ProtectedRoute + pakai AdminLayout */}
+            <Route
+              path="/admin/*"
+              element={
+                <Suspense fallback={<PageLoader />}>
+                  <AdminRoutes />
+                </Suspense>
+              }
+            />
 
-          {/* Semua route selain /admin/* masuk ke layout publik */}
-          <Route path="/*" element={<PublicLayout />} />
-        </Routes>
-      </BrowserRouter>
+            {/* Semua route selain /admin/* masuk ke layout publik */}
+            <Route path="/*" element={<PublicLayout />} />
+          </Routes>
+        </BrowserRouter>
+      </ToastProvider>
     </AuthProvider>
   );
 }

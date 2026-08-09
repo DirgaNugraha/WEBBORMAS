@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import IconPicker from '../../components/admin/Iconpicker';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { getIcon } from '../../lib/icons';
 import type { StatItem } from '../../types';
 

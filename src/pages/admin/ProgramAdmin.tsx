@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Plus, Pencil, Trash2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import IconPicker from '../../components/admin/Iconpicker';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { getIcon } from '../../lib/icons';
 import type { ProgramItem } from '../../types';
 

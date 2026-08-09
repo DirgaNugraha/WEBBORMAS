@@ -9,10 +9,10 @@ interface PageHeaderProps {
 
 export default function PageHeader({ title, subtitle, icon }: PageHeaderProps) {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-primary-700 via-primary-600 to-secondary-600 pt-32 pb-20 md:pt-36 md:pb-24">
-      <div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-30" />
-      <div className="absolute -top-24 -right-24 w-96 h-96 bg-secondary-400/20 rounded-full blur-3xl" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl" />
+<div className="relative overflow-hidden bg-white border-b border-slate-200 pt-32 pb-20 md:pt-36 md:pb-24">
+<div className="absolute inset-0 bg-grid-pattern bg-[size:40px_40px] opacity-[0.03]" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary-100/40 rounded-full blur-3xl" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-secondary-100/40 rounded-full blur-3xl" />
       <div className="container-page relative">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -21,12 +21,12 @@ export default function PageHeader({ title, subtitle, icon }: PageHeaderProps) {
           className="max-w-3xl"
         >
           {icon && (
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/15 backdrop-blur-sm border border-white/20 mb-5">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-50 border border-primary-100 mb-5">
               {icon}
             </div>
           )}
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">{title}</h1>
-          <p className="text-lg text-primary-100">{subtitle}</p>
+          <h1 className="text-4xl md:text-5xl font-bold text-slate-900 mb-4">{title}</h1>
+          <p className="text-lg text-slate-600">{subtitle}</p>
         </motion.div>
       </div>
     </div>

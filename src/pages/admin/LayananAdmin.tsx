@@ -6,7 +6,7 @@ import {
 import Modal from '../../components/Modal';
 import IconPicker from '../../components/admin/Iconpicker';
 import ArrayInput from '../../components/admin/Arrayinput';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { getIcon } from '../../lib/icons';
 import type { Layanan } from '../../types';
 

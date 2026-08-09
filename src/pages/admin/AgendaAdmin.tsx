@@ -4,7 +4,7 @@ import {
   CheckCircle2, AlertCircle, Loader2, CalendarDays, AlertTriangle 
 } from 'lucide-react';
 import Modal from '../../components/Modal';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { formatDate } from '../../lib/format';
 import type { Agenda } from '../../types';
 

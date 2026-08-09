@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { ImagePlus, Loader2, X } from 'lucide-react';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 
 interface ImageUploadProps {
   label: string;

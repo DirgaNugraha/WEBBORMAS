@@ -5,12 +5,10 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import ImageUpload from '../../components/admin/Imageupload';
-import IconPicker from '../../components/admin/Iconpicker';
-import { adminService } from '../../services/Adminservice';
-import { getIcon } from '../../lib/icons';
+import { adminService } from '../../services/adminService';
 import type { Potensi } from '../../types';
 
-const emptyForm = { nama: '', kategori: '', deskripsi: '', gambar: '', icon: 'Sprout' };
+const emptyForm = { nama: '', kategori: '', deskripsi: '', gambar: '' };
 
 function PotensiAdmin() {
   const [list, setList] = useState<Potensi[]>([]);
@@ -38,14 +36,13 @@ function PotensiAdmin() {
     setModalOpen(true);
   };
 
-  const openEdit = (item: Potensi) => {
+const openEdit = (item: Potensi) => {
     setEditingId(item.id);
     setForm({ 
       nama: item.nama, 
       kategori: item.kategori, 
       deskripsi: item.deskripsi ?? '', 
-      gambar: item.gambar ?? '', 
-      icon: item.icon || 'Sprout' 
+      gambar: item.gambar ?? ''
     });
     setFormError('');
     setModalOpen(true);
@@ -116,8 +113,7 @@ function PotensiAdmin() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {list.map((item) => {
-            const IconComponent = getIcon(item.icon);
+{list.map((item) => {
             return (
               <div 
                 key={item.id} 
@@ -133,16 +129,14 @@ function PotensiAdmin() {
                         className="w-full h-full object-cover" 
                       />
                       <div className="absolute top-2 left-2">
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
-                          <IconComponent className="w-3 h-3 text-emerald-400" />
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
                           {item.kategori}
                         </span>
                       </div>
                     </div>
                   ) : (
                     <div className="p-5 bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border-b border-slate-100 flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-2xs border border-emerald-100">
-                        <IconComponent className="w-3.5 h-3.5 text-emerald-600" />
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-emerald-700 shadow-2xs border border-emerald-100">
                         {item.kategori}
                       </span>
                     </div>
@@ -233,13 +227,7 @@ function PotensiAdmin() {
               folder="potensi" 
             />
 
-            <IconPicker 
-              label="Ikon *" 
-              value={form.icon} 
-              onChange={(icon) => setForm({ ...form, icon })} 
-            />
-
-            {formError && (
+{formError && (
               <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{formError}</span>

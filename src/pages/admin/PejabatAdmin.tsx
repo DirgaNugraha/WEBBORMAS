@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import ImageUpload from '../../components/admin/Imageupload';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import type { Pejabat } from '../../types';
 
 const emptyForm = { nama: '', jabatan: '', nip: '', foto: '', urutan: 0 as number | '' };

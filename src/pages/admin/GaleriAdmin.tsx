@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import ImageUpload from '../../components/admin/Imageupload';
-import { adminService } from '../../services/Adminservice';
+import { adminService } from '../../services/adminService';
 import { formatDate } from '../../lib/format';
 import type { GaleriItem } from '../../types';
 

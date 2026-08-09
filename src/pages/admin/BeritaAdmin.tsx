@@ -4,11 +4,12 @@ import {
   Plus, Edit2, Trash2, X, Image as ImageIcon, Loader2 
 } from 'lucide-react';
 import ImageUpload from '../../components/admin/Imageupload';
-import { supabase } from '../../lib/supabaseClient'; // Adjust path ke supabase client kamu
+import { adminService } from '../../services/adminService';
+import { useToast } from '../../components/ui/Toast';
 import type { Berita } from '../../types';
 
 export default function BeritaAdmin() {
-  // --- STATE DATA SUPABASE ---
+  // --- STATE DATA ---
   const [dataBerita, setDataBerita] = useState<Berita[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -31,18 +32,13 @@ export default function BeritaAdmin() {
   const [linkAsli, setLinkAsli] = useState('');
 
   const [error, setError] = useState<string | null>(null);
+  const { success, error: toastError } = useToast();
 
-  // 1. READ: Fetch Data Berita dari Supabase saat komponen di-mount
+  // 1. READ: Fetch data berita via adminService (query terpusat)
   const fetchBerita = async () => {
     try {
       setIsLoading(true);
-      const { data, error } = await supabase
-        .from('berita')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
+      const data = await adminService.list<any>('berita', 'created_at', false);
       // Map data dari DB (snake_case) ke objek state React
       const mappedData = (data || []).map((item: any) => ({
         ...item,
@@ -50,10 +46,9 @@ export default function BeritaAdmin() {
         namaSumber: item.nama_sumber,
         linkAsli: item.link_asli,
       }));
-
       setDataBerita(mappedData);
-    } catch (err: any) {
-      console.error('Gagal mengambil berita:', err.message);
+    } catch (err) {
+      console.error('Gagal mengambil berita:', err);
       setError('Gagal memuat data berita dari server.');
     } finally {
       setIsLoading(false);
@@ -172,55 +167,51 @@ const handleToggleMode = (eksternal: boolean) => {
           }),
     };
 
-    try {
+try {
       setIsSubmitting(true);
 
       if (editingId) {
         // Update data eksis
-        const { error: updateError } = await supabase
-          .from('berita')
-          .update(payload)
-          .eq('id', editingId);
-
-        if (updateError) throw updateError;
+        const { error: updateError } = await adminService.update('berita', editingId, payload);
+        if (updateError) throw new Error(updateError);
       } else {
         // Insert data baru
-        const { error: insertError } = await supabase
-          .from('berita')
-          .insert([payload]);
-
-        if (insertError) throw insertError;
+        const { error: insertError } = await adminService.create('berita', payload);
+        if (insertError) throw new Error(insertError);
       }
 
       // Refresh list berita & tutup modal
       await fetchBerita();
       setIsModalOpen(false);
       resetForm();
+      success(editingId ? 'Berita berhasil diperbarui.' : 'Berita berhasil ditambahkan.');
     } catch (err: any) {
       console.error('Error saat menyimpan:', err.message);
       setError(err.message || 'Gagal menyimpan berita ke database Supabase.');
+      toastError(err.message || 'Gagal menyimpan berita.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // 3. DELETE: Hapus Data dari Supabase
+// --- STATE DELETE CONFIRMATION ---
+  const [deleteTarget, setDeleteTarget] = useState<Berita | null>(null);
+
+  // 3. DELETE: Hapus Data via adminService
   const handleDelete = async (id: string | number) => {
-    if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) return;
+    if (!deleteTarget) return;
 
     try {
-      const { error: deleteError } = await supabase
-        .from('berita')
-        .delete()
-        .eq('id', id);
-
-      if (deleteError) throw deleteError;
+      const { error: deleteError } = await adminService.remove('berita', id);
+      if (deleteError) throw new Error(deleteError);
 
       // Refresh data
-      fetchBerita();
-} catch (err: any) {
+      await fetchBerita();
+      setDeleteTarget(null);
+      success('Berita berhasil dihapus.');
+    } catch (err: any) {
       console.error('Gagal menghapus:', err.message);
-      alert('Gagal menghapus berita: ' + err.message);
+      toastError('Gagal menghapus berita: ' + err.message);
     }
   };
 
@@ -317,8 +308,8 @@ const handleToggleMode = (eksternal: boolean) => {
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        <button
-                          onClick={() => item.id && handleDelete(item.id)}
+<button
+                          onClick={() => setDeleteTarget(item)}
                           className="p-1.5 rounded-lg text-slate-600 hover:text-red-700 hover:bg-red-50 transition-colors cursor-pointer"
                           title="Hapus Berita"
                         >
@@ -537,6 +528,41 @@ const handleToggleMode = (eksternal: boolean) => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+{/* MODAL KONFIRMASI HAPUS */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in-95 duration-150">
+            <div className="flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-red-50 text-red-600 shrink-0">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Hapus Berita</h2>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Apakah Anda yakin ingin menghapus berita{' '}
+                  <strong className="text-slate-700">"{deleteTarget.judul}"</strong>?
+                  Tindakan ini tidak dapat dibatalkan.
+                </p>
+              </div>
+            </div>
+            <div className="pt-5 border-t border-slate-100 mt-5 flex items-center justify-end gap-2">
+              <button
+                onClick={() => setDeleteTarget(null)}
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => handleDelete(deleteTarget.id)}
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+              >
+                <Trash2 className="w-4 h-4" />
+                <span>Ya, Hapus</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

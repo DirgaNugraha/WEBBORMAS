@@ -1,9 +1,9 @@
 import { memo, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sprout, ImageOff, Layers, ArrowUpRight } from 'lucide-react';
+import { Sprout, ImageOff, Layers, ArrowUpRight, Info } from 'lucide-react';
 import PageHeader from '../components/ui/PageHeader';
+import Modal from '../components/Modal';
 import { dataService } from '../services/dataService';
-import { getIcon } from '../lib/icons';
 import type { Potensi } from '../types';
 
 // Component Skeleton Loading Kartu
@@ -24,9 +24,8 @@ function PotensiSkeletonCard() {
 }
 
 // Sub-komponen Kartu Potensi
-function PotensiCard({ potensi, index }: { potensi: Potensi; index: number }) {
+function PotensiCard({ potensi, index, onSelect }: { potensi: Potensi; index: number; onSelect: (p: Potensi) => void }) {
   const [imgError, setImgError] = useState(false);
-  const Icon = getIcon(potensi.icon);
 
   const hasValidPhoto = potensi.gambar && potensi.gambar.trim() !== '' && !imgError;
 
@@ -37,7 +36,8 @@ function PotensiCard({ potensi, index }: { potensi: Potensi; index: number }) {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.25, delay: index * 0.04 }}
-      className="group bg-white  border border-slate-200/90  rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300  hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      onClick={() => onSelect(potensi)}
+      className="group bg-white  border border-slate-200/90  rounded-2xl overflow-hidden shadow-xs hover:shadow-xl hover:border-blue-300  hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
     >
       {/* Visual Image Container */}
       <div className="relative h-52 sm:h-56 w-full bg-slate-100  overflow-hidden flex items-center justify-center">
@@ -56,15 +56,8 @@ function PotensiCard({ potensi, index }: { potensi: Potensi; index: number }) {
           </div>
         )}
 
-        {/* Gradien Overlay Legibilitas Teks */}
+{/* Gradien Overlay Legibilitas Teks */}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent pointer-events-none" />
-
-        {/* Floating Icon Badge (Kiri Atas) */}
-        <div className="absolute top-3.5 left-3.5 z-10">
-          <div className="p-2.5 rounded-xl bg-slate-900/60 backdrop-blur-md border border-white/20 text-white shadow-xs">
-            <Icon className="w-4 h-4 md:w-5 md:h-5" />
-          </div>
-        </div>
 
         {/* Badge Kategori (Kanan Bawah Overlay) */}
         <div className="absolute bottom-3 right-3 z-10">
@@ -97,6 +90,7 @@ function PotensiKelurahan() {
   const [potensiList, setPotensiList] = useState<Potensi[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>('Semua');
+  const [selectedPotensi, setSelectedPotensi] = useState<Potensi | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -174,8 +168,13 @@ function PotensiKelurahan() {
         ) : filteredPotensi.length > 0 ? (
           <motion.div layout className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence>
-              {filteredPotensi.map((potensi, i) => (
-                <PotensiCard key={potensi.id} potensi={potensi} index={i} />
+{filteredPotensi.map((potensi, i) => (
+                <PotensiCard
+                  key={potensi.id}
+                  potensi={potensi}
+                  index={i}
+                  onSelect={setSelectedPotensi}
+                />
               ))}
             </AnimatePresence>
           </motion.div>
@@ -191,9 +190,64 @@ function PotensiKelurahan() {
             <p className="text-xs md:text-sm text-slate-500  mt-1">
               Tidak ditemukan item potensi pada kategori <span className="font-semibold text-slate-700 ">"{selectedCategory}"</span>.
             </p>
-          </div>
+</div>
         )}
       </section>
+
+{/* Modal Detail Potensi (Inline) */}
+      <Modal
+        isOpen={!!selectedPotensi}
+        onClose={() => setSelectedPotensi(null)}
+        maxWidth="max-w-2xl"
+      >
+        {selectedPotensi && (
+          <div className="p-6 md:p-8 space-y-6">
+            {/* Header Modal Potensi */}
+            <div className="space-y-3 pr-10">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-extrabold uppercase tracking-wider border border-blue-200">
+                  {selectedPotensi.kategori}
+                </span>
+              </div>
+              <h3 className="text-xl md:text-2xl font-black text-slate-900 leading-tight">
+                {selectedPotensi.nama}
+              </h3>
+            </div>
+
+            {/* Foto Pendukung */}
+            {selectedPotensi.gambar && selectedPotensi.gambar.trim() !== '' && (
+              <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                <img
+                  src={selectedPotensi.gambar}
+                  alt={selectedPotensi.nama}
+                  className="w-full h-56 md:h-72 object-cover"
+                />
+              </div>
+            )}
+
+            {/* Deskripsi Lengkap */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <Info className="w-4 h-4 text-blue-700" />
+                <span>Deskripsi & Rincian</span>
+              </div>
+              <div className="text-slate-600 text-sm leading-relaxed whitespace-pre-line bg-slate-50 rounded-xl p-4 border border-slate-200/80">
+                {selectedPotensi.deskripsi || 'Tidak ada deskripsi untuk potensi ini.'}
+              </div>
+            </div>
+
+            {/* Footer Modal Action */}
+            <div className="pt-4 border-t border-slate-100 flex justify-end">
+              <button
+                onClick={() => setSelectedPotensi(null)}
+                className="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-sm transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
